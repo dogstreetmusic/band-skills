@@ -5,39 +5,30 @@
 <title>Beginning Band Skills</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Music&display=swap">
 <style>
-/* Layout: instrument picker and view tabs across the top; a sticky progress rail on the left (summary, routine, metronome), the Skills / Practice log / Tuner view on the right; stacks to one column on phones. */
+/* Layout: white brand bar, then instrument picker and view tabs; a sticky progress rail on the left (summary, routine, metronome), the Skills / Practice log / Tuner view on the right; stacks to one column on phones.
+   Look: DoG Street Music branding. Light gray page, white cards, dark brown headings, near-black buttons, mustard gold from the logo as the accent, rust for "in progress". Deliberately single (light) theme to match the brand site. */
 :root {
-  --bg: #f4f5f7;
+  color-scheme: light;
+  --bg: #f5f6f7;          /* page gray from the site hero */
   --surface: #ffffff;
-  --ink: #18202c;
-  --muted: #5a6474;
-  --line: #dde1e7;
-  --brass: #8c6414;
-  --brass-soft: #f3e7cc;
-  --brass-fill: #c9952e;
-  --work: #2f6fb3;
-  --work-soft: #e2edf8;
-  --done: #2f7d4f;
-  --done-soft: #def0e5;
-  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --ink: #2a2624;         /* body text */
+  --head: #3b302c;        /* dark brown headings */
+  --muted: #6e6662;
+  --line: #e4e1dd;
+  --btn: #222222;         /* solid button */
+  --brass: #8a6b00;       /* gold, text-safe */
+  --brass-soft: #fbf1cc;
+  --brass-fill: #c9a116;  /* logo mustard */
+  --work: #a3440c;        /* logo rust */
+  --work-soft: #f8e6da;
+  --done: #3c7a3a;
+  --done-soft: #e3f0df;
+  --font-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #11151b; --surface: #1a2029; --ink: #e8ebf0; --muted: #9aa4b3; --line: #2b333f;
-    --brass: #e3b456; --brass-soft: #3a2f17; --brass-fill: #d7a548;
-    --work: #7fb2ea; --work-soft: #1d2d42; --done: #74c795; --done-soft: #1a3427;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #11151b; --surface: #1a2029; --ink: #e8ebf0; --muted: #9aa4b3; --line: #2b333f;
-  --brass: #e3b456; --brass-soft: #3a2f17; --brass-fill: #d7a548;
-  --work: #7fb2ea; --work-soft: #1d2d42; --done: #74c795; --done-soft: #1a3427;
-  color-scheme: dark;
+  --font-mono: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-music: "Noto Music", "Bravura Text", "Segoe UI Symbol", "Apple Symbols", serif;
 }
 
 * { box-sizing: border-box; }
@@ -45,6 +36,17 @@ body {
   background: var(--bg); color: var(--ink);
   font-family: var(--font-body); font-size: 15px; line-height: 1.55;
 }
+h1, h2, h3 { color: var(--head); }
+.brandbar { background: var(--surface); border-bottom: 1px solid var(--line); }
+.brandbar-in {
+  max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px;
+}
+.wordmark { display: grid; line-height: 1; text-decoration: none; }
+.wordmark b { font-weight: 800; font-size: 28px; color: var(--brass-fill); letter-spacing: .02em; }
+.wordmark b span { color: var(--work); }
+.wordmark small { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; color: var(--ink); margin-top: 3px; }
+.brand-tag { font-size: 15px; font-weight: 500; color: var(--ink); }
 .wrap {
   max-width: 1180px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -57,18 +59,18 @@ header.top { display: grid; gap: 6px; margin-bottom: 20px; }
   text-transform: uppercase; color: var(--brass);
 }
 h1 {
-  font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
-  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: -.015em;
 }
 .lede { color: var(--muted); max-width: 66ch; margin: 4px 0 0; }
 
 .inst-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .inst-tabs a {
-  padding: 7px 15px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface);
+  padding: 8px 16px; border-radius: 6px; border: 2px solid #5b4c46; background: var(--surface);
   color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px;
 }
 .inst-tabs a:hover { border-color: var(--brass-fill); }
-.inst-tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.inst-tabs a[aria-current="page"] { background: var(--btn); color: #ffffff; border-color: var(--btn); }
 .inst-tabs a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 .inst-line { font-size: 13px; color: var(--muted); margin: 0 0 6px; font-family: var(--font-mono); }
 
@@ -127,11 +129,12 @@ input[type=range] { width: 100%; accent-color: var(--brass-fill); }
 
 button { font: inherit; cursor: pointer; }
 .btn {
-  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-  border-radius: 8px; padding: 7px 14px; font-weight: 600; font-size: 13.5px;
+  border: 2px solid #5b4c46; background: var(--surface); color: var(--head);
+  border-radius: 6px; padding: 6px 14px; font-weight: 600; font-size: 13.5px;
 }
-.btn:hover { border-color: var(--brass); }
-.btn.primary { background: var(--brass-fill); border-color: var(--brass-fill); color: #1b1404; }
+.btn:hover { background: var(--bg); }
+.btn.primary { background: var(--btn); border-color: var(--btn); color: #ffffff; }
+.btn.primary:hover { background: #3a3a3a; }
 .btn.small { padding: 4px 10px; font-size: 12.5px; }
 .btn:focus-visible, .chip:focus-visible, .filters button:focus-visible, .tag:focus-visible, .step:focus-within, .col:focus-visible, .seg:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 .reset-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
@@ -143,7 +146,7 @@ button { font: inherit; cursor: pointer; }
   border: 1px solid var(--line); background: var(--surface); color: var(--muted);
   border-radius: 99px; padding: 5px 13px; font-size: 13px; font-weight: 500;
 }
-.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.filters button[aria-pressed="true"] { background: var(--btn); color: #ffffff; border-color: var(--btn); }
 
 .group { margin-bottom: 34px; scroll-margin-top: 16px; }
 .group-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
@@ -190,26 +193,31 @@ button { font: inherit; cursor: pointer; }
 .step .k { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 
 /* Fingering / position / sticking diagrams */
-.notes { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.notes { grid-column: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .note {
-  display: grid; justify-items: center; align-content: start; gap: 4px; padding: 6px 8px 5px;
-  border: 1px solid var(--line); border-radius: 7px; min-width: 46px; background: var(--bg);
+  display: grid; justify-items: center; align-content: start; gap: 2px; padding: 8px 8px 6px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
 }
-.note .nm { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+.note .nm { font-size: 13px; font-weight: 700; color: var(--head); white-space: nowrap; }
+.note .body { display: flex; align-items: center; gap: 2px; }
+.note .body.stack { flex-direction: column; gap: 4px; }
+.note svg { display: block; overflow: visible; }
+.note svg .sl { stroke: var(--ink); stroke-width: 1; }
+.note svg .nh { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.note svg .glyph { fill: var(--ink); font-family: var(--font-music); }
+.note svg .k { fill: var(--surface); stroke: var(--ink); stroke-width: 1.3; }
+.note svg .k.on { fill: var(--ink); }
+.note svg .kl { stroke: var(--ink); stroke-width: 1.3; fill: none; }
+.note svg .wk { fill: var(--surface); stroke: var(--ink); stroke-width: 1; }
+.note svg .bk { fill: var(--ink); }
+.note svg .wk.on, .note svg .bk.on { fill: var(--brass-fill); }
 .dia { display: flex; gap: 3px; align-items: center; }
-.dia i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; }
-.dia i.dn { background: var(--brass-fill); border-color: var(--brass-fill); }
-.dia i.sm { width: 7px; height: 7px; }
-.dia i.ov { width: 9px; height: 6px; border-radius: 3px; }
-.dia .gap { width: 3px; }
+.dia i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--ink); flex: none; }
+.dia i.dn { background: var(--ink); }
 .dia.slide { gap: 2px; }
 .dia.slide i { width: 5px; height: 10px; border-radius: 2px; border: 0; background: var(--line); }
-.dia.slide i.dn { background: var(--brass-fill); }
-.dia.bells { flex-direction: column; gap: 2px; }
-.dia.bells i { width: 22px; height: 6px; border-radius: 2px; border: 0; background: var(--line); }
-.dia.bells i.up { margin-left: 8px; }
-.dia.bells i.dn { background: var(--brass-fill); }
-.note .fg { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+.dia.slide i.dn { background: var(--ink); }
+.note .fg { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
 .empty { color: var(--muted); font-size: 14px; padding: 20px 0; }
 footer { margin-top: 24px; color: var(--muted); font-size: 12.5px; max-width: 70ch; display: grid; gap: 6px; }
@@ -324,6 +332,13 @@ textarea { resize: vertical; min-height: 64px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
+
+<div class="brandbar">
+  <div class="brandbar-in">
+    <span class="wordmark" aria-label="DoG Street Music"><b>D<span>o</span>G</b><small>STREET MUSIC</small></span>
+    <span class="brand-tag">Beginning band practice tools</span>
+  </div>
+</div>
 
 <div class="wrap">
   <header class="top">
@@ -535,7 +550,7 @@ const INSTRUMENTS = {
     notes: { "G":[67,"11110001"], "A":[69,"11100001"], "B♭":[70,"11001001"], "C":[72,"01000001"], "D":[74,"10111110"], "E♭":[75,"10111111"], "F":[77,"11111001"] },
     base: { "G":67, "A":69, "B♭":70, "C":72, "D":62, "E♭":63, "F":65 },
     series: [[0,"Low octave"],[12,"Middle octave"],[19,"Harmonic above"],[24,"High octave"]],
-    diaNote: "Diagrams read left to right: left thumb, left hand 1‑2‑3, right hand 1‑2‑3, then the E♭ key under the right pinky. A filled key is pressed. B♭ is shown with the \"1 and 1\" fingering; your teacher may also show thumb B♭.",
+    diaNote: "Fingering charts read left to right: left hand 1‑2‑3, then right hand 1‑2‑3, with the E♭ key (right pinky) at the end. Underneath are the left thumb key and the B♭ thumb lever. Black means pressed. B♭ is shown with the \"1 and 1\" fingering; your teacher may also show thumb B♭.",
     posture: [
       { id:"assemble", t:"Put the flute together", how:"Twist the headjoint and footjoint on while holding the ends, never by the keys or rods. Line up the embouchure hole with the center of the first key, and the footjoint rod with the center of the last key on the body.", goal:"You can assemble and pack the flute with no bent keys and correct alignment." },
       { id:"hold", t:"Hold the flute", how:"The flute rests on the base of your left index finger with the left thumb on the long thumb key. Your right thumb sits under the flute between fingers 1 and 2, and your right pinky rests on the E♭ key.", goal:"The flute balances on your chin, left index finger and right thumb without your fingers squeezing." },
@@ -564,7 +579,7 @@ const INSTRUMENTS = {
     notes: { "low A":[57,"10111110"], "low B":[59,"10111100"], "C":[60,"10111000"], "D":[62,"10110000"], "E":[64,"10100000"], "F":[65,"10000000"], "G":[67,"00000000"] },
     base: { "low A":57, "low B":59, "C":60, "D":62, "E":64, "F":65, "G":67 },
     series: [[0,"Low register (chalumeau)"],[19,"With register key (clarion)"]],
-    diaNote: "Diagrams read left to right: left thumb hole, register key, left hand 1‑2‑3, right hand 1‑2‑3. A filled circle means cover or press it. Open G has nothing down.",
+    diaNote: "Fingering charts read top to bottom: left hand 1‑2‑3, then right hand 1‑2‑3. Top left is the thumb hole inside the register key. Black means covered or pressed. Open G has nothing down.",
     posture: [
       { id:"assemble", t:"Put the clarinet together", how:"Grease the corks if they are tight. When joining the upper and lower joints, press the upper rings so the bridge key lifts out of the way, then line up the bridge key.", goal:"You assemble and pack the clarinet without bending the bridge key." },
       { id:"hold", t:"Hold the clarinet", how:"Your right thumb goes under the thumb rest, between the nail and first knuckle. Your left thumb covers the back hole at an angle so it can reach the register key. Cover holes with the pads of your fingers.", goal:"No air leaks: every hole is fully covered." },
@@ -593,7 +608,7 @@ const INSTRUMENTS = {
     notes: { "E":[64,"0111110"], "F♯":[66,"0111010"], "G":[67,"0111000"], "A":[69,"0110000"], "B":[71,"0100000"], "C":[72,"0010000"], "D":[74,"1111111"] },
     base: { "E":64, "F♯":66, "G":67, "A":69, "B":71, "C":72, "D":62 },
     series: [[0,"Low octave"],[12,"With octave key"]],
-    diaNote: "Diagrams read left to right: octave key (left thumb), left hand 1‑2‑3, right hand 1‑2‑3 on the pearl keys. A filled key is pressed.",
+    diaNote: "Fingering charts read top to bottom: left hand 1‑2‑3, then right hand 1‑2‑3. Top left is the octave key (left thumb); the key at the bottom is the low C key. Black means pressed.",
     posture: [
       { id:"assemble", t:"Put the saxophone together", how:"Put the neck strap on first. Attach the neck without squeezing the octave key, then push the mouthpiece about halfway onto the cork and add the reed and ligature.", goal:"You assemble and pack the sax without bending the octave key." },
       { id:"hold", t:"Hold the saxophone", how:"The neck strap holds the weight. Your right thumb goes under the thumb hook and your left thumb rests on the thumb rest by the octave key. Keep your fingertips on the pearl keys.", goal:"Fingers stay on the pearls and your hands stay relaxed." },
@@ -621,7 +636,7 @@ const INSTRUMENTS = {
     penta: ["C","D","E","F","G"], extras: ["low A","low B"],
     notes: { "low A":[57,"12"], "low B":[59,"2"], "C":[60,"0"], "D":[62,"13"], "E":[64,"12"], "F":[65,"1"], "G":[67,"0"] },
     open: [[2,60],[3,67],[4,72],[5,76],[6,79]],
-    diaNote: "Valve diagrams read 1‑2‑3 from the mouthpiece side; a filled circle means press that valve.",
+    diaNote: "Valve diagrams read 1‑2‑3 from the mouthpiece side; black means press that valve.",
     lipSlur: "C and G",
     posture: [
       { id:"assemble", t:"Put the trumpet together", how:"Twist the mouthpiece in gently by hand, never tap or force it.", goal:"You can assemble and pack the horn without help or a stuck mouthpiece." },
@@ -689,7 +704,7 @@ const INSTRUMENTS = {
     keySig: "On bells, your first key signature has two flats, B♭ and E♭. Those notes are on the upper row of bars.",
     penta: ["B♭","C","D","E♭","F"], extras: ["G","A"],
     notes: { "G":[67,"low"], "A":[69,"low"], "B♭":[70,"up"], "C":[72,"low"], "D":[74,"low"], "E♭":[75,"up"], "F":[77,"low"] },
-    diaNote: "Bell diagrams show which row the note is on: the lower row (natural notes) or the raised upper row (sharps and flats). Sticking marks: R is right hand, L is left hand.",
+    diaNote: "The keyboard under each note shows which bar to play. Bells are laid out like a piano: white keys are the lower row, black keys are the raised upper row. Sticking marks: R is right hand, L is left hand.",
     posture: [
       { id:"grip", t:"Use matched grip", how:"Find the balance point about a third of the way up from the end of the stick. Pinch there between your thumb and the first knuckle of your index finger and wrap the other fingers loosely. Palms face down.", goal:"The sticks bounce freely and there's a small gap between your back fingers and palm." },
       { id:"stance", t:"Stand with playing posture", how:"Stand tall with feet shoulder‑width apart and the snare drum at about belt height. Elbows hang relaxed at your sides.", goal:"You play a 2‑minute exercise without leaning or raising your shoulders." },
@@ -969,28 +984,85 @@ const KEY_NAMES = {
   clarinet: ["thumb hole","register key","L1","L2","L3","R1","R2","R3"],
   sax: ["octave key","L1","L2","L3","R1","R2","R3"],
 };
-const KEY_LAYOUT = {   // groups of [index, shape]
-  flute: [[[0,"sm"]],[[1],[2],[3]],[[4],[5],[6]],[[7,"ov"]]],
-  clarinet: [[[0,"sm"],[1,"ov"]],[[2],[3],[4]],[[5],[6],[7]]],
-  sax: [[[0,"ov"]],[[1],[2],[3]],[[4],[5],[6]]],
-};
 function fingerText(code, dia) {
   if (dia === "valves") return code === "0" ? "open" : code.split("").join("‑");
   if (dia === "slide") return ORD(+code) + " position";
-  if (dia === "bells") return code === "up" ? "upper row" : "lower row";
+  if (dia === "bells") return "";
   const pressed = KEY_NAMES[dia].filter((_, i) => code[i] === "1");
   return pressed.length ? pressed.join(", ") : "nothing pressed";
 }
-function diagramHTML(code, dia) {
-  if (dia === "valves") return `<span class="dia">${[1,2,3].map(n => `<i class="${code.includes(String(n)) ? "dn" : ""}"></i>`).join("")}</span>`;
-  if (dia === "slide") return `<span class="dia slide">${[1,2,3,4,5,6,7].map(n => `<i class="${+code === n ? "dn" : ""}"></i>`).join("")}</span>`;
-  if (dia === "bells") return `<span class="dia bells"><i class="up ${code === "up" ? "dn" : ""}"></i><i class="${code === "low" ? "dn" : ""}"></i></span>`;
-  return `<span class="dia">${KEY_LAYOUT[dia].map(g => g.map(([i, shape]) => `<i class="${shape || ""} ${code[i] === "1" ? "dn" : ""}"></i>`).join("")).join('<span class="gap"></span>')}</span>`;
+const LETTERS = "CDEFGAB";
+function noteParts(name, midi) {
+  const bare = name.replace(/^(low|high) /, "");
+  const letter = bare[0], acc = bare.includes("♭") ? "♭" : bare.includes("♯") ? "♯" : "";
+  const natural = midi - (acc === "♭" ? -1 : acc === "♯" ? 1 : 0);
+  return { letter, acc, octave: Math.floor(natural / 12) - 1 };
+}
+// Small staff with a whole note, in the style of a printed fingering chart.
+function staffSVG(name, midi, clef) {
+  const { letter, acc, octave } = noteParts(name, midi);
+  const dia = octave * 7 + LETTERS.indexOf(letter);
+  const bottom = clef === "bass" ? 2 * 7 + 4 : 4 * 7 + 2;   // G2 or E4 on the bottom line
+  const idx = dia - bottom, y = 42 - idx * 3, x = 46;
+  let out = "";
+  for (let i = 0; i < 5; i++) out += `<line class="sl" x1="0" x2="62" y1="${18 + i * 6}" y2="${18 + i * 6}"/>`;
+  for (let k = -2; k >= idx; k -= 2) out += `<line class="sl" x1="${x - 7}" x2="${x + 7}" y1="${42 - k * 3}" y2="${42 - k * 3}"/>`;
+  for (let k = 10; k <= idx; k += 2) out += `<line class="sl" x1="${x - 7}" x2="${x + 7}" y1="${42 - k * 3}" y2="${42 - k * 3}"/>`;
+  out += clef === "bass"
+    ? `<text class="glyph" x="1" y="36" font-size="25">𝄢</text>`
+    : `<text class="glyph" x="1" y="45" font-size="33">𝄞</text>`;
+  if (acc) out += `<text class="glyph" x="${x - 17}" y="${y + (acc === "♭" ? 4 : 5)}" font-size="20">${acc}</text>`;
+  out += `<ellipse class="nh" cx="${x}" cy="${y}" rx="5" ry="3.4" transform="rotate(-18 ${x} ${y})"/>`;
+  return `<svg width="64" height="66" viewBox="0 0 64 66" aria-hidden="true">${out}</svg>`;
+}
+const K = (cls, on) => `class="${cls}${on ? " on" : ""}"`;
+// Vertical saxophone chart: octave key at top left, 3 + 3 pearl keys, low C key at the bottom.
+function saxSVG(c) {
+  const on = i => c[i] === "1";
+  let o = `<ellipse ${K("k", on(0))} cx="6" cy="7" rx="3" ry="4.5"/>`;
+  [10, 20, 30, 44, 54, 64].forEach((y, i) => { o += `<circle ${K("k", on(i + 1))} cx="17" cy="${y}" r="4"/>`; });
+  o += `<circle class="k" cx="8" cy="80" r="4"/><line class="kl" x1="4" x2="12" y1="80" y2="80"/>`;
+  return `<svg width="26" height="88" viewBox="0 0 26 88" aria-hidden="true">${o}</svg>`;
+}
+// Vertical clarinet chart: register key (teardrop) around the thumb hole at top left, then 3 + 3 tone holes.
+function clarinetSVG(c) {
+  const on = i => c[i] === "1";
+  let o = `<path ${K("k", on(1))} d="M7 1 C10.5 5 12 8 12 11 A5 5 0 0 1 2 11 C2 8 3.5 5 7 1Z"/>`;
+  o += `<circle class="k${on(0) ? " on" : ""}" cx="7" cy="11" r="2.4" style="${on(1) ? "stroke:var(--surface)" : ""}"/>`;
+  [10, 20, 30, 44, 54, 64].forEach((y, i) => { o += `<circle ${K("k", on(i + 2))} cx="21" cy="${y}" r="4"/>`; });
+  return `<svg width="28" height="70" viewBox="0 0 28 70" aria-hidden="true">${o}</svg>`;
+}
+// Horizontal flute chart: 3 | 3 keys, thumb key and B♭ lever underneath, E♭ key as a stemmed key at the end.
+function fluteSVG(c) {
+  const on = i => c[i] === "1";
+  let o = "";
+  [5, 15, 25, 39, 49, 59].forEach((x, i) => { o += `<circle ${K("k", on(i + 1))} cx="${x}" cy="10" r="4"/>`; });
+  o += `<line class="kl" x1="32" x2="32" y1="5" y2="15"/>`;
+  o += `<circle ${K("k", on(0))} cx="5" cy="23" r="3.2"/><rect class="k" x="10.5" y="20.5" width="12" height="5" rx="2.5"/>`;
+  o += `<ellipse ${K("k", on(7))} cx="71" cy="14" rx="3.6" ry="2.8" transform="rotate(-20 71 14)"/><line class="kl" x1="74.4" x2="74.4" y1="13" y2="2"/>`;
+  return `<svg width="80" height="30" viewBox="0 0 80 30" aria-hidden="true">${o}</svg>`;
+}
+// Mini keyboard (C to C) with the note's key shaded, like the bells keyboard worksheet.
+function bellsSVG(midi) {
+  const pc = ((midi % 12) + 12) % 12, W = 10;
+  const whites = [0, 2, 4, 5, 7, 9, 11, 12], blacks = [[1, 0], [3, 1], [6, 3], [8, 4], [10, 5]];
+  let o = "";
+  whites.forEach((p, i) => { o += `<rect ${K("wk", p === pc)} x="${i * W}" y="0" width="${W}" height="30"/>`; });
+  blacks.forEach(([p, after]) => { o += `<rect ${K("bk", p === pc)} x="${(after + 1) * W - 3.3}" y="0" width="6.6" height="18"/>`; });
+  return `<svg width="${whites.length * W + 1}" height="31" viewBox="-0.5 -0.5 ${whites.length * W + 1} 31" aria-hidden="true">${o}</svg>`;
 }
 function noteHTML(n) {
-  const ins = I(), [, code] = ins.notes[n], dia = ins.dia;
-  const caption = dia === "valves" ? fingerText(code, dia) : dia === "slide" ? ORD(+code) : dia === "bells" ? (code === "up" ? "upper" : "lower") : "";
-  return `<div class="note" title="${esc(n)}: ${esc(fingerText(code, dia))}"><span class="nm">${esc(n)}</span>${diagramHTML(code, dia)}${caption ? `<span class="fg">${caption}</span>` : ""}</div>`;
+  const ins = I(), [midi, code] = ins.notes[n], dia = ins.dia;
+  const staff = staffSVG(n, midi, ins.clef);
+  let body;
+  if (dia === "sax") body = `<div class="body">${staff}${saxSVG(code)}</div>`;
+  else if (dia === "clarinet") body = `<div class="body">${staff}${clarinetSVG(code)}</div>`;
+  else if (dia === "flute") body = `<div class="body stack">${staff}${fluteSVG(code)}</div>`;
+  else if (dia === "bells") body = `<div class="body stack">${staff}${bellsSVG(midi)}</div>`;
+  else if (dia === "valves") body = `<div class="body stack">${staff}<span class="dia">${[1,2,3].map(v => `<i class="${code.includes(String(v)) ? "dn" : ""}"></i>`).join("")}</span><span class="fg">${fingerText(code, dia)}</span></div>`;
+  else body = `<div class="body stack">${staff}<span class="dia slide">${[1,2,3,4,5,6,7].map(v => `<i class="${+code === v ? "dn" : ""}"></i>`).join("")}</span><span class="fg">${ORD(+code)}</span></div>`;
+  const label = dia === "bells" ? n : `${n}: ${fingerText(code, dia)}`;
+  return `<div class="note" role="img" aria-label="${esc(label)}"><span class="nm">${esc(n)}</span>${body}</div>`;
 }
 
 // =====================================================================
