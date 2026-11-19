@@ -1,0 +1,1609 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Beginning Band Skills</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: instrument picker and view tabs across the top; a sticky progress rail on the left (summary, routine, metronome), the Skills / Practice log / Tuner view on the right; stacks to one column on phones. */
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --ink: #18202c;
+  --muted: #5a6474;
+  --line: #dde1e7;
+  --brass: #8c6414;
+  --brass-soft: #f3e7cc;
+  --brass-fill: #c9952e;
+  --work: #2f6fb3;
+  --work-soft: #e2edf8;
+  --done: #2f7d4f;
+  --done-soft: #def0e5;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151b; --surface: #1a2029; --ink: #e8ebf0; --muted: #9aa4b3; --line: #2b333f;
+    --brass: #e3b456; --brass-soft: #3a2f17; --brass-fill: #d7a548;
+    --work: #7fb2ea; --work-soft: #1d2d42; --done: #74c795; --done-soft: #1a3427;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151b; --surface: #1a2029; --ink: #e8ebf0; --muted: #9aa4b3; --line: #2b333f;
+  --brass: #e3b456; --brass-soft: #3a2f17; --brass-fill: #d7a548;
+  --work: #7fb2ea; --work-soft: #1d2d42; --done: #74c795; --done-soft: #1a3427;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+}
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+header.top { display: grid; gap: 6px; margin-bottom: 20px; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--brass);
+}
+h1 {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -.01em;
+}
+.lede { color: var(--muted); max-width: 66ch; margin: 4px 0 0; }
+
+.inst-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.inst-tabs a {
+  padding: 7px 15px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px;
+}
+.inst-tabs a:hover { border-color: var(--brass-fill); }
+.inst-tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.inst-tabs a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.inst-line { font-size: 13px; color: var(--muted); margin: 0 0 6px; font-family: var(--font-mono); }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 24px; flex-wrap: wrap; }
+.tabs a {
+  padding: 10px 14px; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 14.5px;
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--brass-fill); }
+.tabs a:hover { color: var(--ink); }
+.tabs a:focus-visible { outline: 2px solid var(--brass); outline-offset: -2px; border-radius: 4px; }
+
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 32px; align-items: start; }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } .rail { order: 2; } }
+
+/* Rail */
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 16px; }
+@media (max-width: 860px) { .rail { position: static; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel h2 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 0; }
+.big { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.big small { font-size: 16px; color: var(--muted); font-weight: 500; }
+.bar { height: 10px; border-radius: 99px; background: var(--line); overflow: hidden; display: flex; }
+.bar span { display: block; height: 100%; transition: width .3s ease; }
+.bar .d { background: var(--done); } .bar .w { background: var(--work); } .bar .b { background: var(--brass-fill); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+.cats { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.cats a {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  padding: 6px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 13.5px;
+}
+.cats a:hover, .cats a:focus-visible { background: var(--brass-soft); outline: none; }
+.cats .ct { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cats .ct.full { color: var(--done); }
+.sync { font-size: 12px; color: var(--muted); }
+.week-mini { display: grid; gap: 6px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.week-mini a { color: var(--brass); font-weight: 600; text-decoration: none; }
+.week-mini a:hover { text-decoration: underline; }
+.week-mini .row { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+
+.routine { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 13.5px; }
+.routine li { display: grid; grid-template-columns: 46px 1fr; gap: 8px; }
+.routine b { font-family: var(--font-mono); font-weight: 500; color: var(--brass); font-size: 12.5px; padding-top: 1px; }
+
+.metro { display: grid; gap: 10px; }
+.metro-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+.bpm { font-family: var(--font-display); font-weight: 800; font-size: 30px; min-width: 3ch; font-variant-numeric: tabular-nums; }
+.bpm-label { font-size: 12px; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--brass-fill); }
+.beats { display: flex; gap: 6px; }
+.beats span { width: 12px; height: 12px; border-radius: 50%; background: var(--line); transition: background .05s; }
+.beats span.on { background: var(--brass-fill); }
+.beats span.on.first { background: var(--brass); }
+.vol-row { display: grid; grid-template-columns: auto minmax(0, 1fr) 3ch; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+
+button { font: inherit; cursor: pointer; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 8px; padding: 7px 14px; font-weight: 600; font-size: 13.5px;
+}
+.btn:hover { border-color: var(--brass); }
+.btn.primary { background: var(--brass-fill); border-color: var(--brass-fill); color: #1b1404; }
+.btn.small { padding: 4px 10px; font-size: 12.5px; }
+.btn:focus-visible, .chip:focus-visible, .filters button:focus-visible, .tag:focus-visible, .step:focus-within, .col:focus-visible, .seg:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.reset-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+.linkish { background: none; border: 0; color: var(--muted); text-decoration: underline; padding: 0; font-size: 12.5px; }
+
+/* Skills view */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.filters button {
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+  border-radius: 99px; padding: 5px 13px; font-size: 13px; font-weight: 500;
+}
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.group { margin-bottom: 34px; scroll-margin-top: 16px; }
+.group-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.group-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 23px; margin: 0; text-wrap: balance; }
+.group-head .ct { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.group-intro { color: var(--muted); margin: 0 0 12px; max-width: 65ch; font-size: 14px; }
+
+.skills { display: grid; gap: 10px; }
+.skill {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px;
+  transition: border-color .2s;
+}
+.skill[data-s="2"] { border-color: color-mix(in srgb, var(--done) 45%, var(--line)); }
+.skill h3 { margin: 0; font-size: 15.5px; font-weight: 600; }
+.skill h3 .num { font-family: var(--font-mono); font-weight: 500; color: var(--brass); margin-right: 6px; }
+.skill[data-s="2"] h3 { color: var(--done); }
+.skill .how { margin: 0; color: var(--ink); font-size: 14px; grid-column: 1; }
+.skill .goal { margin: 0; color: var(--muted); font-size: 13px; grid-column: 1; }
+.skill .goal strong { color: var(--brass); font-weight: 600; }
+.chip {
+  grid-column: 2; grid-row: 1 / span 3; align-self: start;
+  border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px 6px 10px;
+  font-size: 12.5px; font-weight: 600; background: var(--bg); color: var(--muted);
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+}
+.chip::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; }
+.chip[data-s="1"] { background: var(--work-soft); color: var(--work); border-color: transparent; }
+.chip[data-s="1"]::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.chip[data-s="2"] { background: var(--done-soft); color: var(--done); border-color: transparent; }
+.chip[data-s="2"]::before { background: currentColor; }
+@media (max-width: 520px) {
+  .skill { grid-template-columns: minmax(0, 1fr); }
+  .chip { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 4px; }
+}
+
+.steps { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px; }
+.step {
+  display: inline-flex; align-items: center; gap: 7px; font-size: 13px;
+  border: 1px solid var(--line); border-radius: 7px; padding: 5px 10px; background: var(--bg); cursor: pointer;
+}
+.step input { accent-color: var(--done); margin: 0; width: 15px; height: 15px; }
+.step:has(input:checked) { color: var(--done); border-color: color-mix(in srgb, var(--done) 40%, var(--line)); }
+.step .k { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+/* Fingering / position / sticking diagrams */
+.notes { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.note {
+  display: grid; justify-items: center; align-content: start; gap: 4px; padding: 6px 8px 5px;
+  border: 1px solid var(--line); border-radius: 7px; min-width: 46px; background: var(--bg);
+}
+.note .nm { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+.dia { display: flex; gap: 3px; align-items: center; }
+.dia i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; }
+.dia i.dn { background: var(--brass-fill); border-color: var(--brass-fill); }
+.dia i.sm { width: 7px; height: 7px; }
+.dia i.ov { width: 9px; height: 6px; border-radius: 3px; }
+.dia .gap { width: 3px; }
+.dia.slide { gap: 2px; }
+.dia.slide i { width: 5px; height: 10px; border-radius: 2px; border: 0; background: var(--line); }
+.dia.slide i.dn { background: var(--brass-fill); }
+.dia.bells { flex-direction: column; gap: 2px; }
+.dia.bells i { width: 22px; height: 6px; border-radius: 2px; border: 0; background: var(--line); }
+.dia.bells i.up { margin-left: 8px; }
+.dia.bells i.dn { background: var(--brass-fill); }
+.note .fg { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+
+.empty { color: var(--muted); font-size: 14px; padding: 20px 0; }
+footer { margin-top: 24px; color: var(--muted); font-size: 12.5px; max-width: 70ch; display: grid; gap: 6px; }
+footer p { margin: 0; }
+
+/* Log view */
+.log-grid { display: grid; gap: 16px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 680px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.stat .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.stat .val { font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.stat .val small { font-size: 14px; font-weight: 500; color: var(--muted); }
+.stat .sub { font-size: 12.5px; color: var(--muted); }
+.goal-edit { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.goal-edit input { width: 64px; }
+
+.chart-wrap { position: relative; }
+.chart { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; height: 170px; }
+.yaxis { position: relative; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.yaxis span { position: absolute; right: 0; transform: translateY(-50%); font-variant-numeric: tabular-nums; }
+.plot { position: relative; display: grid; grid-template-rows: 1fr auto; min-width: 0; }
+.cols { position: relative; display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; align-items: end; border-bottom: 1px solid var(--line); }
+.gridline { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--line); pointer-events: none; }
+.col { height: 100%; display: flex; align-items: flex-end; justify-content: center; cursor: default; border-radius: 4px; }
+.col:hover { background: color-mix(in srgb, var(--brass-fill) 8%, transparent); }
+.col i { display: block; width: min(100%, 26px); background: var(--brass-fill); border-radius: 4px 4px 0 0; }
+.col.zero i { height: 2px !important; background: var(--line); border-radius: 0; }
+.col.today i { background: var(--brass); }
+.xlabels { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); text-align: center; padding-top: 5px; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--ink); color: var(--bg);
+  font-size: 12px; padding: 6px 9px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, -100%);
+  z-index: 2;
+}
+
+form.log-form { display: grid; gap: 14px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .flabel { font-size: 13px; font-weight: 600; }
+.row2 { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 14px; }
+@media (max-width: 560px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
+input[type=date], input[type=number], textarea {
+  font: inherit; font-size: 14px; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%;
+}
+input:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+textarea { resize: vertical; min-height: 64px; }
+.min-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.min-row input { width: 80px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  border-radius: 99px; padding: 4px 11px; font-size: 12.5px; font-weight: 500;
+}
+.tag[aria-pressed="true"] { background: var(--brass-soft); border-color: var(--brass-fill); color: var(--brass); }
+.tag-group { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; width: 100%; margin-top: 2px; }
+.form-msg { font-size: 13px; color: var(--done); }
+.form-msg.err { color: var(--work); }
+
+.entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.entry {
+  display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 4px 14px; align-items: start;
+  padding: 12px 0; border-top: 1px solid var(--line);
+}
+.entry:first-child { border-top: 0; }
+.entry .when { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.entry .when b { display: block; color: var(--ink); font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.entry .what { display: grid; gap: 5px; min-width: 0; }
+.entry .etags { display: flex; gap: 5px; flex-wrap: wrap; }
+.entry .etags span { font-size: 12px; padding: 2px 8px; border-radius: 99px; background: var(--brass-soft); color: var(--brass); }
+.entry .enote { font-size: 13.5px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.entry .enote.none { color: var(--muted); }
+@media (max-width: 520px) { .entry { grid-template-columns: 70px minmax(0, 1fr); } .entry .del { grid-column: 2; justify-self: start; } }
+.log-empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+
+/* Tuner view */
+.muted { color: var(--muted); font-size: 13.5px; margin: 0; max-width: 65ch; }
+.file-btn { display: inline-flex; align-items: center; }
+.file-btn:focus-within { outline: 2px solid var(--brass); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tuner-msg { font-size: 13px; color: var(--muted); }
+.tuner-msg.err { color: var(--work); }
+.tuner-main { justify-items: center; text-align: center; gap: 14px; }
+.det-note { font-family: var(--font-display); font-weight: 800; font-size: clamp(48px, 9vw, 72px); line-height: 1; font-variant-numeric: tabular-nums; }
+.det-sub { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+.meter { position: relative; width: 100%; max-width: 460px; height: 44px; }
+.meter .track { position: absolute; left: 0; right: 0; top: 14px; height: 12px; border-radius: 99px; background: var(--line); }
+.meter .zone { position: absolute; top: 14px; height: 12px; left: 40%; width: 20%; background: var(--done-soft); border: 1px solid var(--done); border-radius: 4px; }
+.meter .needle { position: absolute; top: 4px; width: 4px; height: 32px; margin-left: -2px; border-radius: 2px; background: var(--ink); left: 50%; transition: left .12s ease; }
+.meter-scale { display: flex; justify-content: space-between; width: 100%; max-width: 460px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.verdict { width: 100%; max-width: 520px; font-size: 15px; font-weight: 500; padding: 10px 14px; border-radius: 8px; background: var(--bg); color: var(--muted); }
+.verdict.good { background: var(--done-soft); color: var(--done); }
+.verdict.warn { background: var(--work-soft); color: var(--work); }
+.ladder { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ladder li {
+  display: grid; grid-template-columns: minmax(96px, auto) 70px minmax(0, 1fr); gap: 10px; align-items: center;
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 13.5px;
+}
+.ladder .pn { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.ladder .pnote { font-family: var(--font-display); font-weight: 700; font-size: 18px; white-space: nowrap; }
+.ladder .ptag { color: var(--muted); font-size: 12.5px; }
+.ladder li.target { border-color: var(--brass-fill); }
+.ladder li.target .ptag { color: var(--brass); font-weight: 600; }
+.ladder li.hit { background: var(--work-soft); }
+.ladder li.hit.target { background: var(--done-soft); }
+.segs { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 6px 10px; font-size: 13px; display: grid; gap: 1px; text-align: left; }
+.seg small { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.seg.ok { border-color: var(--done); }
+.seg.ok b { color: var(--done); }
+.seg[aria-pressed="true"] { outline: 2px solid var(--brass); outline-offset: 1px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Beginning band · Essential Elements Book 1</div>
+    <h1>Beginning Band Skills</h1>
+    <p class="lede">Pick your instrument, then work down the checklist: posture, breathing, reading, notes, sound, long tones, articulation, the penta‑scale and your book lines. Tap a skill's status to move it from <em>Not started</em> to <em>Working on it</em> to <em>Got it</em>, log each practice session, and use the Tuner to check your notes.</p>
+  </header>
+
+  <nav class="inst-tabs" id="inst-tabs" aria-label="Instrument"></nav>
+  <p class="inst-line" id="inst-line"></p>
+  <nav class="tabs" id="view-tabs" aria-label="Views"></nav>
+
+  <div class="layout">
+    <aside class="rail">
+      <section class="panel" aria-labelledby="prog-h">
+        <h2 id="prog-h">Your progress</h2>
+        <div class="big" id="pct">0%<small></small></div>
+        <div class="bar" aria-hidden="true"><span class="d" id="bar-d"></span><span class="w" id="bar-w"></span></div>
+        <div class="legend">
+          <span><i style="background:var(--done)"></i><span id="n-done">0</span> got it</span>
+          <span><i style="background:var(--work)"></i><span id="n-work">0</span> working</span>
+          <span><i style="background:var(--line)"></i><span id="n-todo">0</span> to go</span>
+        </div>
+        <ul class="cats" id="cats"></ul>
+        <div class="week-mini">
+          <div class="row"><span>Practice this week</span><span id="mini-week">0 / 100 min</span></div>
+          <div class="bar" aria-hidden="true"><span class="b" id="mini-bar"></span></div>
+          <a href="#log" id="mini-link">Log a session</a>
+        </div>
+        <div class="sync" id="sync">Saved in this browser.</div>
+      </section>
+
+      <section class="panel" aria-labelledby="rt-h">
+        <h2 id="rt-h">A 20‑minute session</h2>
+        <ul class="routine" id="routine"></ul>
+      </section>
+
+      <section class="panel metro" aria-labelledby="mt-h">
+        <h2 id="mt-h">Metronome</h2>
+        <div class="metro-row">
+          <div><div class="bpm" id="bpm-out">60</div><div class="bpm-label">beats per minute</div></div>
+          <div class="beats" id="beats" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <label class="bpm-label" for="bpm">Tempo</label>
+        <input type="range" id="bpm" min="40" max="160" step="2" value="60">
+        <div class="vol-row"><label for="vol">Volume</label><input type="range" id="vol" min="0" max="100" step="5" value="90"><span id="vol-out">90</span></div>
+        <div class="reset-row">
+          <button class="btn primary" id="metro-btn" type="button">Start</button>
+          <button class="btn" type="button" data-bpm="60">60</button>
+          <button class="btn" type="button" data-bpm="80">80</button>
+          <button class="btn" type="button" data-bpm="100">100</button>
+        </div>
+      </section>
+    </aside>
+
+    <main>
+      <!-- Skills view -->
+      <div id="view-skills">
+        <div class="filters" role="group" aria-label="Show skills">
+          <button type="button" data-f="all" aria-pressed="true">All skills</button>
+          <button type="button" data-f="0" aria-pressed="false">Not started</button>
+          <button type="button" data-f="1" aria-pressed="false">Working on it</button>
+          <button type="button" data-f="2" aria-pressed="false">Got it</button>
+        </div>
+        <div id="groups"></div>
+        <div class="reset-row" style="margin-top:8px">
+          <button class="linkish" type="button" id="reset">Clear skill progress for this instrument</button>
+          <span id="reset-confirm" hidden>Clear every skill back to Not started?
+            <button class="btn" type="button" id="reset-yes">Yes, clear</button>
+            <button class="btn" type="button" id="reset-no">Keep my progress</button>
+          </span>
+        </div>
+        <footer id="skills-foot"></footer>
+      </div>
+
+      <!-- Log view -->
+      <div id="view-log" class="log-grid" hidden>
+        <div class="stats">
+          <div class="stat">
+            <span class="lbl">This week</span>
+            <span class="val" id="s-week">0<small> min</small></span>
+            <div class="bar" aria-hidden="true"><span class="b" id="s-week-bar"></span></div>
+            <div class="goal-edit"><label for="goal-input">Goal</label><input type="number" id="goal-input" min="10" max="2000" step="5" value="100"><span>min / week</span></div>
+          </div>
+          <div class="stat">
+            <span class="lbl">Days this week</span>
+            <span class="val" id="s-days">0<small> / 7</small></span>
+            <span class="sub">Monday to Sunday</span>
+          </div>
+          <div class="stat">
+            <span class="lbl">Streak</span>
+            <span class="val" id="s-streak">0<small> days</small></span>
+            <span class="sub" id="s-streak-sub">Practice today to start one</span>
+          </div>
+          <div class="stat">
+            <span class="lbl">All time</span>
+            <span class="val" id="s-total">0<small> hr</small></span>
+            <span class="sub" id="s-count">0 sessions</span>
+          </div>
+        </div>
+
+        <section class="panel" aria-labelledby="ch-h">
+          <h2 id="ch-h">Minutes practiced, last 14 days</h2>
+          <div class="chart-wrap" id="chart-wrap">
+            <div class="chart">
+              <div class="yaxis" id="yaxis"></div>
+              <div class="plot">
+                <div class="cols" id="cols"></div>
+                <div class="xlabels" id="xlabels"></div>
+              </div>
+            </div>
+            <div class="tip" id="tip" hidden></div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="lf-h">
+          <h2 id="lf-h">Log a practice session</h2>
+          <form class="log-form" id="log-form" novalidate>
+            <div class="row2">
+              <div class="field">
+                <label for="log-date">Date</label>
+                <input type="date" id="log-date" required>
+              </div>
+              <div class="field">
+                <label for="log-min">Minutes</label>
+                <div class="min-row">
+                  <input type="number" id="log-min" min="1" max="600" value="20" required>
+                  <button type="button" class="btn small" data-min="10">10</button>
+                  <button type="button" class="btn small" data-min="15">15</button>
+                  <button type="button" class="btn small" data-min="20">20</button>
+                  <button type="button" class="btn small" data-min="30">30</button>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <span class="flabel" id="tags-label">What you worked on</span>
+              <div class="tags" id="log-tags" role="group" aria-labelledby="tags-label"></div>
+            </div>
+            <div class="field">
+              <label for="log-note">Notes</label>
+              <textarea id="log-note" maxlength="600" placeholder="What went well, what to fix next time, the tempo you reached…"></textarea>
+            </div>
+            <div class="reset-row">
+              <button type="submit" class="btn primary">Add to log</button>
+              <span class="form-msg" id="form-msg" role="status"></span>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="ent-h">
+          <h2 id="ent-h">Recent sessions</h2>
+          <ul class="entries" id="entries"></ul>
+        </section>
+      </div>
+
+      <!-- Tuner view -->
+      <div id="view-tuner" class="log-grid" hidden>
+        <section class="panel" aria-labelledby="tn-h">
+          <h2 id="tn-h">Note checker</h2>
+          <p class="muted" id="tn-intro"></p>
+          <div class="field">
+            <span class="flabel" id="target-label">Aiming for</span>
+            <div class="tags" id="target-notes" role="group" aria-labelledby="target-label"></div>
+          </div>
+          <div class="reset-row">
+            <button type="button" class="btn primary" id="mic-btn">Listen with microphone</button>
+            <label class="btn file-btn" for="clip-in">Upload a recording<input type="file" id="clip-in" accept="audio/*" class="sr-only"></label>
+            <button type="button" class="btn" id="ref-btn">Hear the target note</button>
+          </div>
+          <div class="tuner-msg" id="tuner-msg" role="status"></div>
+        </section>
+
+        <section class="panel tuner-main" aria-live="polite">
+          <div class="det-note" id="det-note">–</div>
+          <div class="det-sub" id="det-sub">Waiting for a note</div>
+          <div class="meter" aria-hidden="true"><div class="track"></div><div class="zone"></div><div class="needle" id="needle" hidden></div></div>
+          <div class="meter-scale" aria-hidden="true"><span>−50¢ flat</span><span>in tune</span><span>sharp +50¢</span></div>
+          <div class="verdict" id="verdict">Play a note to see if you hit it.</div>
+        </section>
+
+        <section class="panel" id="clip-panel" aria-labelledby="clip-h" hidden>
+          <h2 id="clip-h">Notes in your recording</h2>
+          <p class="muted">Each note the tuner found, in order. Tap one to check it.</p>
+          <div class="segs" id="segs"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="ladder-h">
+          <h2 id="ladder-h">Same fingering, other notes</h2>
+          <p class="muted" id="ladder-sub"></p>
+          <ol class="ladder" id="ladder"></ol>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// Instruments
+// Note entries: name -> [written MIDI, fingering code]. Written pitch is what the
+// player reads. transpose = semitones from concert up to written.
+// =====================================================================
+const INSTRUMENTS = {
+  flute: {
+    name: "Flute", family: "ww", sound: "headjoint", transpose: 0, clef: "treble", dia: "flute",
+    line: "Flute in C · concert pitch · treble clef",
+    keySig: "Your first key signature has two flats, B♭ and E♭. Every B and E is flat unless the music says otherwise.",
+    penta: ["B♭","C","D","E♭","F"], extras: ["G","A"],
+    notes: { "G":[67,"11110001"], "A":[69,"11100001"], "B♭":[70,"11001001"], "C":[72,"01000001"], "D":[74,"10111110"], "E♭":[75,"10111111"], "F":[77,"11111001"] },
+    base: { "G":67, "A":69, "B♭":70, "C":72, "D":62, "E♭":63, "F":65 },
+    series: [[0,"Low octave"],[12,"Middle octave"],[19,"Harmonic above"],[24,"High octave"]],
+    diaNote: "Diagrams read left to right: left thumb, left hand 1‑2‑3, right hand 1‑2‑3, then the E♭ key under the right pinky. A filled key is pressed. B♭ is shown with the \"1 and 1\" fingering; your teacher may also show thumb B♭.",
+    posture: [
+      { id:"assemble", t:"Put the flute together", how:"Twist the headjoint and footjoint on while holding the ends, never by the keys or rods. Line up the embouchure hole with the center of the first key, and the footjoint rod with the center of the last key on the body.", goal:"You can assemble and pack the flute with no bent keys and correct alignment." },
+      { id:"hold", t:"Hold the flute", how:"The flute rests on the base of your left index finger with the left thumb on the long thumb key. Your right thumb sits under the flute between fingers 1 and 2, and your right pinky rests on the E♭ key.", goal:"The flute balances on your chin, left index finger and right thumb without your fingers squeezing." },
+      { id:"posture", t:"Sit with playing posture", how:"Sit tall at the front of the chair. Turn your head slightly left, keep the flute close to parallel with the floor and your elbows relaxed away from your body.", goal:"You hold the position for a 2‑minute exercise without the flute drooping or your shoulders rising." },
+      { id:"placement", t:"Place the lip plate", how:"Rest the lip plate in the crease of your chin. Your bottom lip covers about a quarter to a third of the hole. Use a mirror.", goal:"You land in the same spot three times in a row without looking." },
+    ],
+    soundGroup: { name:"Headjoint sounds", intro:"Make a good sound on the headjoint alone before adding the rest of the flute.", skills:[
+      { id:"hj-find", t:"Make a sound on the headjoint", how:"Hold the headjoint with the open end to the right, lip plate at your chin, and blow across the hole like blowing over a bottle.", goal:"A clear sound on the first or second try." },
+      { id:"hj-openclosed", t:"Play open and closed", how:"Cover the open end with your right palm and the note drops about an octave. Alternate open and closed, 4 beats each.", goal:"Both notes sound clearly with no airy hiss." },
+      { id:"hj-slide", t:"Play the slide whistle", how:"Put a finger in the open end and slide it in and out while you blow.", goal:"Smooth slides up and down without the sound cutting out." },
+      { id:"hj-lt", t:"Hold a headjoint long tone", how:"With the end open, hold the note for 4 beats at 60, rest 4, and repeat.", goal:"A steady, clear sound for all 4 beats." },
+    ]},
+    care: [
+      { id:"swab", t:"Swab after playing", how:"Thread the cleaning cloth through the rod's eye so no metal shows, then swab each section to remove moisture.", goal:"You swab every time without being reminded." },
+      { id:"handle", t:"Handle it by the ends", how:"Hold the body above the keys and the headjoint by the lip plate end. Pressing on rods and keys while assembling bends them.", goal:"No bent keys or sticky pads." },
+      { id:"wipe", t:"Wipe off fingerprints", how:"Use a soft cloth on the outside after playing. Never use metal polish on the flute.", goal:"The flute stays clean without polish." },
+      { id:"headjoint", t:"Leave the crown alone", how:"Don't twist the crown at the end of the headjoint. It holds the cork in the right spot for tuning.", goal:"The crown stays where your teacher set it." },
+      { id:"case", t:"Store it safely", how:"Put each piece in its place in the case, latch it, and never leave the flute on a chair or stand.", goal:"No dents or bent keys." },
+    ],
+  },
+  clarinet: {
+    name: "Clarinet", family: "ww", sound: "reed", transpose: 2, clef: "treble", dia: "clarinet",
+    line: "B♭ clarinet · written pitch · your written C sounds as a concert B♭",
+    keySig: "Your first lines have no sharps or flats (written C), even though the band sounds in concert B♭.",
+    penta: ["C","D","E","F","G"], extras: ["low A","low B"],
+    notes: { "low A":[57,"10111110"], "low B":[59,"10111100"], "C":[60,"10111000"], "D":[62,"10110000"], "E":[64,"10100000"], "F":[65,"10000000"], "G":[67,"00000000"] },
+    base: { "low A":57, "low B":59, "C":60, "D":62, "E":64, "F":65, "G":67 },
+    series: [[0,"Low register (chalumeau)"],[19,"With register key (clarion)"]],
+    diaNote: "Diagrams read left to right: left thumb hole, register key, left hand 1‑2‑3, right hand 1‑2‑3. A filled circle means cover or press it. Open G has nothing down.",
+    posture: [
+      { id:"assemble", t:"Put the clarinet together", how:"Grease the corks if they are tight. When joining the upper and lower joints, press the upper rings so the bridge key lifts out of the way, then line up the bridge key.", goal:"You assemble and pack the clarinet without bending the bridge key." },
+      { id:"hold", t:"Hold the clarinet", how:"Your right thumb goes under the thumb rest, between the nail and first knuckle. Your left thumb covers the back hole at an angle so it can reach the register key. Cover holes with the pads of your fingers.", goal:"No air leaks: every hole is fully covered." },
+      { id:"posture", t:"Sit with playing posture", how:"Sit tall at the front of the chair with the bell between your knees and the clarinet about 30 to 40 degrees from your body. Bring the clarinet to your mouth, not your head down to it.", goal:"You hold the position for a 2‑minute exercise without slumping." },
+      { id:"embouchure", t:"Form the embouchure", how:"Top teeth rest on top of the mouthpiece. Your bottom lip covers the bottom teeth slightly. Keep the chin flat and pointed and the corners firm.", goal:"A steady sound on the mouthpiece and barrel without biting." },
+    ],
+    soundGroup: { name:"Reed setup", intro:"A good reed, put on correctly, makes everything else easier.", skills:[
+      { id:"reed-pick", t:"Pick a good reed", how:"Start with a strength 2 or 2½. Check the tip for chips or cracks and keep 3 or 4 reeds in a reed guard to rotate.", goal:"You can spot a chipped or cracked reed and swap it out." },
+      { id:"reed-wet", t:"Wet the reed", how:"Hold the thin end of the reed in your mouth for about a minute before putting it on.", goal:"The reed is wet every time you play." },
+      { id:"reed-place", t:"Put the reed on", how:"Flat side on the mouthpiece, centered, with a hair of the mouthpiece tip showing above the reed. Slide the ligature on below the end of the cut and tighten the screws until snug, not tight.", goal:"You set up the reed by yourself and it doesn't slip." },
+      { id:"mp-sound", t:"Play on mouthpiece and barrel", how:"Play just the mouthpiece and barrel together. Aim for a steady, high pitch (around concert F♯) without squeaking.", goal:"A steady pitch for 4 beats without squeaks." },
+    ]},
+    care: [
+      { id:"swab", t:"Swab after playing", how:"Pull the swab through each joint to dry the inside. Moisture left inside can crack a wooden clarinet.", goal:"You swab every time without being reminded." },
+      { id:"reed", t:"Take off the reed", how:"Remove the ligature and reed after playing, store the reed in a reed guard and put the cap on the mouthpiece.", goal:"Reeds stay flat and unchipped." },
+      { id:"cork", t:"Grease the corks", how:"Use a little cork grease on the tenon corks when joints are hard to put together.", goal:"Joints slide together without forcing." },
+      { id:"bridge", t:"Protect the keys", how:"Hold the joints in your palms, not by the rods and keys, and always lift the bridge key when assembling.", goal:"No bent keys." },
+      { id:"case", t:"Store it safely", how:"Every piece in its spot in the case, latched. Keep it out of hot cars and direct sun.", goal:"No cracks or bent keys." },
+    ],
+  },
+  sax: {
+    name: "Alto Sax", family: "ww", sound: "reed", transpose: 9, clef: "treble", dia: "sax",
+    line: "E♭ alto saxophone · written pitch · your written C sounds as a concert E♭",
+    keySig: "Your first key signature has one sharp, F♯. Every F is sharp unless the music says otherwise.",
+    penta: ["G","A","B","C","D"], extras: ["E","F♯"],
+    notes: { "E":[64,"0111110"], "F♯":[66,"0111010"], "G":[67,"0111000"], "A":[69,"0110000"], "B":[71,"0100000"], "C":[72,"0010000"], "D":[74,"1111111"] },
+    base: { "E":64, "F♯":66, "G":67, "A":69, "B":71, "C":72, "D":62 },
+    series: [[0,"Low octave"],[12,"With octave key"]],
+    diaNote: "Diagrams read left to right: octave key (left thumb), left hand 1‑2‑3, right hand 1‑2‑3 on the pearl keys. A filled key is pressed.",
+    posture: [
+      { id:"assemble", t:"Put the saxophone together", how:"Put the neck strap on first. Attach the neck without squeezing the octave key, then push the mouthpiece about halfway onto the cork and add the reed and ligature.", goal:"You assemble and pack the sax without bending the octave key." },
+      { id:"hold", t:"Hold the saxophone", how:"The neck strap holds the weight. Your right thumb goes under the thumb hook and your left thumb rests on the thumb rest by the octave key. Keep your fingertips on the pearl keys.", goal:"Fingers stay on the pearls and your hands stay relaxed." },
+      { id:"posture", t:"Sit with playing posture", how:"Adjust the neck strap so the mouthpiece comes straight to your mouth without tipping your head. Sit tall with the sax at your right side, bell clear of the chair.", goal:"You hold the position for a 2‑minute exercise without slumping." },
+      { id:"embouchure", t:"Form the embouchure", how:"Top teeth rest on the mouthpiece about a centimeter from the tip. Your bottom lip covers the bottom teeth slightly, with the corners in like saying \"oo\".", goal:"A full sound on the mouthpiece without squeaks or biting." },
+    ],
+    soundGroup: { name:"Reed setup", intro:"A good reed, put on correctly, makes everything else easier.", skills:[
+      { id:"reed-pick", t:"Pick a good reed", how:"Start with an alto sax reed in strength 2 or 2½. Check the tip for chips or cracks and keep 3 or 4 reeds in a reed guard to rotate.", goal:"You can spot a chipped or cracked reed and swap it out." },
+      { id:"reed-wet", t:"Wet the reed", how:"Hold the thin end of the reed in your mouth for about a minute before putting it on.", goal:"The reed is wet every time you play." },
+      { id:"reed-place", t:"Put the reed on", how:"Flat side on the mouthpiece, centered, with a hair of the mouthpiece tip showing above the reed. Slide the ligature on below the end of the cut and tighten until snug, not tight.", goal:"You set up the reed by yourself and it doesn't slip." },
+      { id:"mp-sound", t:"Play on the mouthpiece", how:"Play just the mouthpiece. Aim for a steady pitch around concert A without squeaking.", goal:"A steady pitch for 4 beats without squeaks." },
+    ]},
+    care: [
+      { id:"swab", t:"Swab after playing", how:"Pull the swab through the body from the bell end and dry the neck with a neck swab.", goal:"You swab every time without being reminded." },
+      { id:"reed", t:"Take off the reed", how:"Remove the ligature and reed after playing, store the reed in a reed guard and put the cap on the mouthpiece.", goal:"Reeds stay flat and unchipped." },
+      { id:"cork", t:"Grease the neck cork", how:"Use a little cork grease when the mouthpiece is hard to push on or twist.", goal:"The mouthpiece moves smoothly to tune." },
+      { id:"handle", t:"Lift by the bell and body", how:"Never pick the sax up by the keys or rods. Put the end plug in the top before storing.", goal:"No bent keys or leaks." },
+      { id:"case", t:"Store it safely", how:"Sax, neck and mouthpiece each in their spot, case latched. Never leave the sax standing on a chair.", goal:"No dents or bent keys." },
+    ],
+  },
+  trumpet: {
+    name: "Trumpet", family: "brass", transpose: 2, clef: "treble", dia: "valves",
+    line: "B♭ trumpet · written pitch · your written C sounds as a concert B♭",
+    keySig: "Your first lines have no sharps or flats (written C), even though the band sounds in concert B♭.",
+    penta: ["C","D","E","F","G"], extras: ["low A","low B"],
+    notes: { "low A":[57,"12"], "low B":[59,"2"], "C":[60,"0"], "D":[62,"13"], "E":[64,"12"], "F":[65,"1"], "G":[67,"0"] },
+    open: [[2,60],[3,67],[4,72],[5,76],[6,79]],
+    diaNote: "Valve diagrams read 1‑2‑3 from the mouthpiece side; a filled circle means press that valve.",
+    lipSlur: "C and G",
+    posture: [
+      { id:"assemble", t:"Put the trumpet together", how:"Twist the mouthpiece in gently by hand, never tap or force it.", goal:"You can assemble and pack the horn without help or a stuck mouthpiece." },
+      { id:"hold", t:"Hold the trumpet", how:"Your left hand wraps the valve casing and holds the weight. Your right thumb sits between valves 1 and 2, fingertips curved on the valve caps, pinky free of the hook.", goal:"Your right hand stays relaxed enough to wiggle all three fingers while holding the horn." },
+      { id:"posture", t:"Sit with playing posture", how:"Feet flat, back off the chair, shoulders down, bell pointed forward and slightly down. Bring the horn to you, not your head to the horn.", goal:"You hold the position for a 2‑minute exercise without slumping." },
+      { id:"placement", t:"Place the mouthpiece", how:"Center it side to side, with roughly half on the top lip and half on the bottom. Use a mirror.", goal:"You land in the same spot three times in a row without looking." },
+    ],
+    care: [
+      { id:"waterkey", t:"Empty the water key", how:"Press the water key on the main slide and blow air through without buzzing. Check the third valve slide too.", goal:"No more gurgling during play." },
+      { id:"oil", t:"Oil the valves", how:"Unscrew one valve at a time, put a few drops on the piston, then put it back so the guide clicks into place. Valve numbers face the mouthpiece.", goal:"All three valves move freely and none blocks the air." },
+      { id:"grease", t:"Grease the slides", how:"Pull each slide (press its valve first), wipe it and add a thin layer of slide grease.", goal:"Slides move smoothly but don't fall out." },
+      { id:"bath", t:"Clean it regularly", how:"Wipe fingerprints after playing, rinse the mouthpiece weekly and give the horn a lukewarm bath about once a month.", goal:"You follow the routine without being reminded." },
+      { id:"case", t:"Store it safely", how:"Always in the case, latched, with nothing loose on top of the valves. Never on a chair.", goal:"No dents." },
+    ],
+  },
+  trombone: {
+    name: "Trombone", family: "brass", transpose: 0, clef: "bass", dia: "slide",
+    line: "Trombone · concert pitch · bass clef",
+    keySig: "Your first key signature has two flats, B♭ and E♭. Every B and E is flat unless the music says otherwise.",
+    penta: ["B♭","C","D","E♭","F"], extras: ["low A","low G"],
+    notes: { "low G":[43,"4"], "low A":[45,"2"], "B♭":[46,"1"], "C":[48,"6"], "D":[50,"4"], "E♭":[51,"3"], "F":[53,"1"] },
+    open: [[2,46],[3,53],[4,58],[5,62],[6,65]],
+    diaNote: "Slide diagrams show the seven positions, 1st (all the way in) on the left to 7th on the right. The filled mark is the position to use.",
+    lipSlur: "B♭ and F in 1st position",
+    posture: [
+      { id:"assemble", t:"Put the trombone together", how:"Keep the slide lock on. Hold the slide by its braces, attach the bell section at the angle your teacher shows, and tighten the nut. Twist the mouthpiece in gently.", goal:"You assemble and pack the trombone without dropping the slide or denting it." },
+      { id:"hold", t:"Hold the trombone", how:"Your left hand holds all the weight: index finger on the mouthpiece shank, thumb around the bell brace, other fingers wrapped on the slide brace. Your right hand holds the lower slide brace lightly with the thumb and first two fingers.", goal:"The slide moves freely with a loose right wrist while the left hand does all the holding." },
+      { id:"posture", t:"Sit with playing posture", how:"Sit tall at the front of the chair with the bell about parallel to the floor, clear of your music stand and the player in front of you.", goal:"You hold the position for a 2‑minute exercise without the bell drooping." },
+      { id:"placement", t:"Place the mouthpiece", how:"Center it side to side, with about half or a little more on the top lip. Use a mirror.", goal:"You land in the same spot three times in a row without looking." },
+    ],
+    care: [
+      { id:"slide", t:"Keep the slide moving freely", how:"Apply a small amount of slide cream or slide oil to the inner slide as your teacher shows, and mist it with water when it starts to drag.", goal:"The slide glides from 1st to 6th with almost no effort." },
+      { id:"lock", t:"Use the slide lock", how:"Lock the slide whenever you aren't playing. Never let the slide end hit the floor or a stand.", goal:"No dents in the slide." },
+      { id:"waterkey", t:"Empty the water key", how:"Press the water key at the bottom of the slide and blow air through without buzzing.", goal:"No more gurgling during play." },
+      { id:"bath", t:"Clean it regularly", how:"Grease the tuning slide, rinse the mouthpiece weekly and give the horn a bath with a cleaning snake about once a month.", goal:"You follow the routine without being reminded." },
+      { id:"case", t:"Store it safely", how:"Slide and bell each in their place, slide locked, case latched. Never stand the trombone on its bell.", goal:"No dents." },
+    ],
+  },
+  euphonium: {
+    name: "Euphonium", family: "brass", transpose: 0, clef: "bass", dia: "valves",
+    line: "Euphonium · concert pitch · bass clef",
+    keySig: "Your first key signature has two flats, B♭ and E♭. Every B and E is flat unless the music says otherwise.",
+    penta: ["B♭","C","D","E♭","F"], extras: ["low A","low G"],
+    notes: { "low G":[43,"12"], "low A":[45,"2"], "B♭":[46,"0"], "C":[48,"13"], "D":[50,"12"], "E♭":[51,"1"], "F":[53,"0"] },
+    open: [[2,46],[3,53],[4,58],[5,62],[6,65]],
+    diaNote: "Valve diagrams read 1‑2‑3 from the mouthpiece side; a filled circle means press that valve. On a four‑valve euphonium, C can also be played with valve 4 alone.",
+    lipSlur: "B♭ and F (open)",
+    posture: [
+      { id:"assemble", t:"Get the euphonium out safely", how:"Lift it from the case by the main tubing, not by the valves or slides. Twist the mouthpiece in gently.", goal:"You take out and put away the euphonium without bumping it." },
+      { id:"hold", t:"Hold the euphonium", how:"Your left arm wraps around the large tubing and holds the horn steady. Your right fingertips curve on the valve caps with the thumb resting on the tubing below, not squeezing.", goal:"Your right fingers can wiggle freely while the horn stays steady." },
+      { id:"posture", t:"Sit with playing posture", how:"Rest the euphonium on your lap or a pad so the mouthpiece comes to your mouth. Sit tall; don't slouch down to reach it.", goal:"You hold the position for a 2‑minute exercise without slumping." },
+      { id:"placement", t:"Place the mouthpiece", how:"Center it side to side, with about half or a little more on the top lip. Use a mirror.", goal:"You land in the same spot three times in a row without looking." },
+    ],
+    care: [
+      { id:"waterkey", t:"Empty the water", how:"Press the water keys and blow air through without buzzing. Turn the horn as your teacher shows to drain water from the tubing.", goal:"No more gurgling during play." },
+      { id:"oil", t:"Oil the valves", how:"Unscrew one valve at a time, put a few drops on the piston, then put it back so the guide clicks into place.", goal:"All valves move freely and none blocks the air." },
+      { id:"grease", t:"Grease the slides", how:"Pull each slide (press its valve first), wipe it and add a thin layer of slide grease.", goal:"Slides move smoothly but don't fall out." },
+      { id:"bath", t:"Clean it regularly", how:"Wipe fingerprints after playing, rinse the mouthpiece weekly and give the horn a lukewarm bath about once a month.", goal:"You follow the routine without being reminded." },
+      { id:"case", t:"Store it safely", how:"Always in the case, latched. Never leave the euphonium on a chair or the floor where it can tip.", goal:"No dents." },
+    ],
+  },
+  percussion: {
+    name: "Percussion", family: "perc", transpose: 0, clef: "treble", dia: "bells",
+    line: "Snare drum, bass drum and bells · bells read treble clef and sound two octaves higher than written",
+    keySig: "On bells, your first key signature has two flats, B♭ and E♭. Those notes are on the upper row of bars.",
+    penta: ["B♭","C","D","E♭","F"], extras: ["G","A"],
+    notes: { "G":[67,"low"], "A":[69,"low"], "B♭":[70,"up"], "C":[72,"low"], "D":[74,"low"], "E♭":[75,"up"], "F":[77,"low"] },
+    diaNote: "Bell diagrams show which row the note is on: the lower row (natural notes) or the raised upper row (sharps and flats). Sticking marks: R is right hand, L is left hand.",
+    posture: [
+      { id:"grip", t:"Use matched grip", how:"Find the balance point about a third of the way up from the end of the stick. Pinch there between your thumb and the first knuckle of your index finger and wrap the other fingers loosely. Palms face down.", goal:"The sticks bounce freely and there's a small gap between your back fingers and palm." },
+      { id:"stance", t:"Stand with playing posture", how:"Stand tall with feet shoulder‑width apart and the snare drum at about belt height. Elbows hang relaxed at your sides.", goal:"You play a 2‑minute exercise without leaning or raising your shoulders." },
+      { id:"angle", t:"Set the sticks and playing spot", how:"The sticks form a \"V\" like a slice of pie, tips about an inch apart, playing just off center of the drum head.", goal:"Both sticks hit the same spot every time." },
+      { id:"bells", t:"Set up at the bells", how:"Stand in the middle of the bells. Play the center of the lower bars and the center or front edge of the upper bars.", goal:"You can hit any bar in the penta‑scale without looking down for long." },
+    ],
+    care: [
+      { id:"sticks", t:"Keep your stick bag ready", how:"Snare sticks, bell mallets and a pencil, all in your stick bag. Replace sticks that are chipped or cracked.", goal:"You never have to borrow sticks." },
+      { id:"mallets", t:"Use the right mallets", how:"Use only the hard rubber or plastic mallets your teacher assigns for bells. Never play bells with drumsticks.", goal:"No dented bars or broken mallets." },
+      { id:"snareoff", t:"Turn the snares off", how:"Flip the snare strainer off when you stop playing so the snare drum doesn't buzz along with the band.", goal:"The snares are off every time the drum isn't being played." },
+      { id:"heads", t:"Protect the drum heads", how:"Never lean on drums or set anything on a head or on the bells: no sticks, no books, no cases.", goal:"No dented heads or bent bars." },
+      { id:"cover", t:"Cover and put away", how:"Cover the bells and drums at the end of rehearsal and put mallets back in the bag.", goal:"The percussion section is put away before you leave." },
+    ],
+  },
+};
+const INST_ORDER = ["flute","clarinet","sax","trumpet","trombone","euphonium","percussion"];
+
+const EE = [
+  { n:2 }, { n:4 }, { n:6 }, { n:8 }, { n:10 },
+  { n:14, name:"Rolling Along" }, { n:17, name:"Hot Cross Buns" }, { n:18, name:"Go Tell Aunt Rhodie" },
+];
+const LABEL = ["Not started", "Working on it", "Got it"];
+
+// =====================================================================
+// Checklist builder: the same ten sections for every instrument
+// =====================================================================
+function buildGroups(id) {
+  const I = INSTRUMENTS[id], fam = I.family, perc = fam === "perc";
+  const pentaStr = I.penta.join(" ") + " " + I.penta.slice(0, -1).reverse().join(" ");
+  const pentaNotes = I.penta.concat(I.penta.slice(0, -1).reverse());
+  const top = I.penta[I.penta.length - 1], first = I.penta[0];
+  const G = [];
+
+  // 1. Posture
+  G.push({ id:"posture", name: perc ? "Posture & grip" : "Posture & setup", intro:"Good habits here prevent tension and make every other skill easier.", skills: I.posture });
+
+  // 2. Breathing
+  const breath = perc ? [
+    { id:"br-rhythm", t:"Breathe in rhythm", how:"Breathe in on the beat before you start, the same way the wind players do.", goal:"You start exactly together with the band." },
+    { id:"br-relax", t:"Stay relaxed while playing", how:"Check your shoulders, jaw and grip every few measures. Breathe out slowly while you practice strokes.", goal:"No tension after 2 minutes of steady strokes." },
+    { id:"br-rests", t:"Keep breathing through rests", how:"Count rests out loud or in your head and keep breathing normally instead of holding your breath.", goal:"You come back in on time after long rests." },
+  ] : [
+    { id:"br-low", t:"Take a low, relaxed breath", how:"Breathe in through the corners of your mouth so your waist expands. Your shoulders should not rise.", goal:"A hand on your belly moves out; a hand on your shoulder stays still." },
+    { id:"br-48", t:"Breathe in 4, out 8", how:"With the metronome at 60, breathe in for 4 beats and blow a steady stream for 8. Then try in 4, out 12.", goal:"You finish 8 beats out with air left and no sudden push at the end." },
+    fam === "brass"
+      ? { id:"br-paper", t:"Hold a steady airstream", how:"Hold a sheet of paper against a wall with only your breath, about 20 cm away.", goal:"The paper stays up for 5 seconds." }
+      : I.sound === "headjoint"
+        ? { id:"br-focus", t:"Aim a focused airstream", how:"Blow a narrow, fast stream at your palm about 15 cm away. Move the spot by changing your lips, not your head.", goal:"You feel one small, cool spot on your palm." }
+        : { id:"br-hiss", t:"Support with a steady hiss", how:"Breathe in for 4, then hiss \"sss\" for 8 beats at the same strength the whole way.", goal:"The hiss doesn't fade or get louder at the end." },
+    { id:"br-plan", t:"Breathe at the right places", how:"Mark breaths in your music with a check mark (✓) at rests and phrase ends, and only breathe there.", goal:"You play a whole EE line breathing only where you marked." },
+  ];
+  G.push({ id:"breath", name: perc ? "Breathing & relaxation" : "Breathing", intro: perc ? "Percussionists breathe with the band. Relaxed breathing keeps your strokes loose." : "Air is the engine. Most beginner tone problems are air problems.", skills: breath });
+
+  // 3. Rhythm & reading
+  const staff = I.clef === "bass"
+    ? { id:"rd-staff", t:"Name notes on the bass clef staff", how:"Lines from the bottom: G B D F A. Spaces: A C E G.", goal:"You name 10 random notes in under 30 seconds." }
+    : perc
+      ? { id:"rd-staff", t:"Read drum and bell music", how:"Snare drum notes sit in the third space and bass drum in the bottom space. Bells read treble clef: lines E G B D F, spaces F A C E.", goal:"You name 10 random bell notes in under 30 seconds and point out snare and bass drum parts." }
+      : { id:"rd-staff", t:"Name notes on the treble clef staff", how:"Lines from the bottom: E G B D F. Spaces: F A C E.", goal:"You name 10 random notes in under 30 seconds." };
+  G.push({ id:"read", name:"Rhythm & reading", intro:"Count out loud before you play. Always use the metronome.", skills:[
+    { id:"rd-values", t:"Count note values", how:"Clap and count whole, half and quarter notes: \"1‑2‑3‑4\".", goal:"You clap a line of mixed values with the metronome at 60." },
+    { id:"rd-rests", t:"Count rests", how:"Whole, half and quarter rests get counted just like notes.", goal:"You come back in on the right beat after every rest." },
+    { id:"rd-8ths", t:"Count eighth notes", how:"Say \"1‑and‑2‑and\" and tap your foot on the numbers.", goal:"You clap a line mixing quarters and eighths." },
+    staff,
+    { id:"rd-key", t:"Read the key signature", how: I.keySig, goal:"You check the key signature before you start every line." },
+    { id:"rd-sight", t:"Sight‑read a short line", how:"Before playing: check the key and time signature, count the rhythm, and find the highest and lowest note.", goal:"You play an unfamiliar 4‑bar line with no more than one stop." },
+  ]});
+
+  // 4. Notes & fingerings / positions / sticking
+  const noteSkills = [
+    { id:"nt-first5", t: perc ? "Find your first five bell notes" : "Learn your first five notes", how: perc ? `Find ${I.penta.join(", ")} on the bells. Say each name as you play it.` : `Play ${I.penta.join(", ")} slowly, saying each name. Then play them up and back down.`, goal: perc ? "You find every note without searching." : `You play ${I.penta.join(" ")} up and back down without stopping.`, notes: I.penta },
+    { id:"nt-extras", t:`Add ${I.extras.join(" and ")}`, how: perc ? "These sit just below B♭ on the lower row. Practice them with the penta‑scale notes." : `These come right below your first five notes. Practice moving between them and ${first}.`, goal:"Both notes come out on the first try.", notes: I.extras },
+  ];
+  if (perc) {
+    noteSkills.push(
+      { id:"st-alt", t:"Alternate sticking", how:"Play quarter notes R L R L on the snare at 60, then 80.", goal:"Both hands sound exactly the same." },
+      { id:"st-rlead", t:"Right‑hand lead", how:"Start each measure with your right hand and alternate from there.", goal:"You keep the lead hand right through a full EE line." },
+      { id:"st-marks", t:"Follow sticking marks", how:"Read the R and L under the notes and play them as written, slowly first.", goal:"You play a line with sticking marks without a mix‑up." },
+    );
+  } else if (I.dia === "slide") {
+    noteSkills.push(
+      { id:"nt-positions", t:"Know the seven positions", how:"1st is all the way in, 3rd is just before the bell, 4th is just past the bell, 6th is close to a full arm's reach.", goal:"You can find 1st, 3rd, 4th and 6th with your eyes closed." },
+      { id:"nt-slide", t:"Move the slide quickly", how:"Move from the wrist and elbow with a light grip. Keep the air going and arrive at the new position on time.", goal:"Clean changes between B♭ (1st) and C (6th) at 60." },
+    );
+  } else {
+    noteSkills.push({ id:"nt-clean", t: I.dia === "valves" ? "Move valves cleanly" : "Move fingers cleanly", how: I.dia === "valves" ? `Without playing, press the valves for ${I.penta.join("–")} with the metronome. Then play it.` : `Without playing, finger ${I.penta.join("–")} with the metronome. Then play it.`, goal: I.dia === "valves" ? "Valves go down together and fully, with no half‑valve sounds." : "Fingers move together and holes or keys are fully covered, with no squeaks or gurgles." });
+    if (id === "flute") noteSkills.push({ id:"nt-c", t:"Keep the flute steady on C", how:"C has almost nothing pressed. Keep your right pinky on the E♭ key and your right thumb under the flute so it doesn't wobble.", goal:"C sounds steady and the flute doesn't roll." });
+    if (id === "clarinet") noteSkills.push({ id:"nt-cover", t:"Cover the holes completely", how:"Use the flat pads of your fingers, not the tips. Squeaks usually mean a hole isn't fully covered.", goal:"Low A, B and C sound without squeaks." });
+    if (id === "sax") noteSkills.push({ id:"nt-octave", t:"Use the octave key for D", how:"D uses all six fingers plus the octave key with your left thumb. Without the octave key you get low D.", goal:"You switch between C and D cleanly." });
+  }
+  G.push({ id:"notes", name: perc ? "Notes & sticking" : I.dia === "slide" ? "Notes & positions" : "Notes & fingerings", intro: perc ? "Bells use the same notes the band plays. Sticking decides which hand plays each note." : I.dia === "slide" ? "Positions are spots on the slide. Move quickly and keep the air going between them." : "Press keys and valves fully with relaxed, curved fingers.", skills: noteSkills });
+
+  // 5. Sound production
+  if (fam === "brass") {
+    G.push({ id:"sound", name:"Buzzing", intro:"The lips make the sound; the horn only amplifies it.", skills:[
+      { id:"bz-lips", t:"Buzz on the lips alone", how:"Firm lip corners, lips lightly together, blow a steady \"bzzz\".", goal:"An even buzz for 5 seconds that doesn't flutter or stop." },
+      { id:"bz-mp", t:"Buzz a steady pitch on the mouthpiece", how:"Hold the mouthpiece at the stem with two fingers and buzz one note.", goal:"The pitch holds still for 4 beats at 60." },
+      { id:"bz-siren", t:"Play mouthpiece sirens", how:"Slide the buzz smoothly up and down like a siren, without breaks.", goal:"A smooth slide up and back down with no gaps." },
+      { id:"bz-match", t:"Buzz it, then play it", how:`Buzz ${first} on the mouthpiece, then put the mouthpiece in and play ${first} on the horn.`, goal:"The note on the horn matches the pitch you buzzed." },
+    ]});
+  } else if (perc) {
+    G.push({ id:"sound", name:"Strokes & sound", intro:"Let the stick do the work. A relaxed stroke gives a better sound.", skills:[
+      { id:"sk-full", t:"Play a full stroke", how:"Start with the stick up, throw it down and let it rebound back to the same height.", goal:"The stick comes back up without your arm lifting it." },
+      { id:"sk-even", t:"Match your hands", how:"Alternate R and L at the same height. Check in a mirror.", goal:"Both sticks rise to the same height and sound the same." },
+      { id:"sk-bass", t:"Bass drum stroke", how:"Play slightly off center with a relaxed, glancing stroke and let the beater bounce off the head.", goal:"A full, round sound, not a slap." },
+      { id:"sk-mallet", t:"Mallet stroke on bells", how:"Lift from the wrist and let the mallet bounce off the bar. Don't press into it.", goal:"Each bar rings instead of clunking." },
+    ]});
+  } else {
+    G.push(I.soundGroup);
+  }
+
+  // 6. Long tones (winds) / Rudiments (percussion)
+  if (perc) {
+    G.push({ id:"tones", name:"Rudiments", intro:"Rudiments are the scales of drumming. Start slow with the metronome and speed up only when they're even.", skills:[
+      { id:"ru-single", t:"Single stroke roll", how:"R L R L evenly. Quarter notes at 60, then eighth notes.", goal:"Even eighth notes at 80 for 30 seconds." },
+      { id:"ru-double", t:"Double stroke roll", how:"R R L L, two even strokes per hand. The second stroke matches the first.", goal:"Even eighth notes at 60 for 30 seconds." },
+      { id:"ru-buzz", t:"Multiple bounce roll", how:"Press lightly so each stroke buzzes, and alternate hands for a smooth sound.", goal:"A smooth roll for 4 beats with no gaps." },
+      { id:"ru-para", t:"Single paradiddle", how:"R L R R  L R L L, with an accent on the first note of each group.", goal:"Two clean groups in a row at 60." },
+      { id:"ru-flam", t:"Flam", how:"One stick starts low (the grace note) and the other high, landing almost together.", goal:"Clean flams on alternating hands." },
+      { id:"ru-5", t:"Five‑stroke roll", how:"Two doubles and an accented tap: R R L L R.", goal:"Clean and even at 60." },
+    ]});
+  } else {
+    G.push({ id:"tones", name:"Long tones", intro:"Long tones build endurance and a steady sound. Play softly to medium; never force.", skills:[
+      { id:"lt-4", t:"Long tones for 4 beats", how:"Hold each note for 4 beats at 60, rest 4, then move to the next.", goal:"Each note starts cleanly and holds the same pitch and volume.", notes: I.penta },
+      { id:"lt-8", t:"Long tones for 8 beats", how:"Same notes, held twice as long. Breathe during the rests, not in the middle.", goal:"The end of the note sounds as good as the start." },
+      { id:"lt-dyn", t:"Grow and fade on one note", how:`On ${top}, start soft, get louder over 4 beats, then fade over 4.`, goal:"The pitch stays steady while the volume changes." },
+      { id:"lt-tune", t:"Hold a note in tune", how:"Open the Tuner tab, pick a note and hold it. Keep the needle in the green zone.", goal:"The needle stays in the green for 4 beats." },
+    ]});
+  }
+
+  // 7. Articulation
+  let artic;
+  if (perc) {
+    artic = [
+      { id:"ar-heights", t:"Use stick heights for dynamics", how:"Piano: about 2 inches. Mezzo forte: about 6. Forte: about 9.", goal:"Your teacher can hear three clear dynamic levels." },
+      { id:"ar-accent", t:"Play accents", how:"Play accented notes from a high stick height and the others low, in groups of four.", goal:"Accents pop out while the other notes stay soft and even." },
+      { id:"ar-cresc", t:"Crescendo and decrescendo", how:"Raise your stick heights gradually over 4 beats, then lower them over 4.", goal:"A smooth change in volume with no sudden jumps." },
+      { id:"ar-stop", t:"Stop the sound on rests", how:"On bass drum and bells, rest your hand on the head or bar to stop the ring when the music has a rest.", goal:"Rests are silent." },
+    ];
+  } else {
+    const tongue = fam === "brass"
+      ? "Say \"too\" or \"tah\". The tip of the tongue touches behind the top teeth and releases the air."
+      : I.sound === "headjoint"
+        ? "Say \"too\". The tip of the tongue touches just behind the top teeth and releases the air. Keep the air moving."
+        : "Touch the tip of your tongue to the tip of the reed and release, saying \"tee\" or \"too\". Your jaw doesn't move.";
+    artic = [
+      { id:"ar-tongue", t:"Start notes with the tongue", how: tongue, goal:"Notes begin with a clean \"t\", with no \"huh\" or explosion." },
+      { id:"ar-quarters", t:"Tongue steady quarter notes", how:"On one note, 4 tongued quarter notes, rest 4. Metronome at 60, then 80.", goal:"All four notes are even in length and volume at 80." },
+      { id:"ar-8ths", t:"Tongue eighth notes", how:"Two notes per click at 60. Keep the air blowing between them.", goal:"Eight even eighth notes in one breath." },
+      { id:"ar-slur", t:"Slur between two notes", how:`Tongue only the first note and change ${I.dia === "slide" ? "position" : "fingers"} for the second while the air keeps going. Start with ${I.penta[0]} to ${I.penta[1]}.`, goal:"A smooth connection with no gap or bump." },
+    ];
+    if (fam === "brass") artic.push({ id:"ar-lipslur", t:"Play a lip slur", how:`Without changing ${I.dia === "slide" ? "position" : "valves"}, move between ${I.lipSlur} using air speed and lip firmness, not pressure.`, goal:"Up and back down, slurred cleanly at 60." });
+    else artic.push({ id:"ar-accent", t:"Play accents", how:"Give accented notes a stronger tongue and more air, then back off for the next note.", goal:"Accents stand out without the note cracking or squeaking." });
+  }
+  G.push({ id:"artic", name: perc ? "Articulation & dynamics" : "Articulation", intro: perc ? "Percussion articulation is about stick height, accents and stopping the sound." : "The tongue starts notes; the air keeps them going.", skills: artic });
+
+  // 8. Penta-scale
+  G.push({ id:"penta", name:"Penta‑scale", intro:`The first five notes, up and back down: ${pentaStr}. Use it every day as a warm‑up.`, skills:[
+    { id:"p-say", t: perc ? "Say the names while you play" : I.dia === "slide" ? "Move the slide while saying the names" : "Finger it while saying the names", how: perc ? "Tap each bar lightly with the metronome at 60, saying each note name out loud." : `Without playing, ${I.dia === "slide" ? "move to each position" : "press each fingering"} with the metronome at 60, saying each name out loud.`, goal:"No hesitation on any note, up or down.", notes: pentaNotes },
+    { id:"p-whole", t:"Play it in whole notes", how: perc ? "Roll or strike each note for 4 beats at 60." : "4 beats per note at 60. Breathe after any note if you need to.", goal: perc ? "Every note is in the right place and rings clearly." : "Every note starts cleanly and holds steady for all 4 beats." },
+    { id:"p-half", t:"Play it in half notes", how: perc ? "2 beats per note at 60, alternating hands." : "2 beats per note at 60, breathing every two notes.", goal:"Up and back with even notes." },
+    { id:"p-quarter", t: perc ? "Play it in quarter notes" : "Play it in quarter notes, tongued", how: perc ? "One note per click, alternating R L. Start at 60, then 80." : `One note per click. Start at 60, then 80. Take a quick breath at the top on ${top} if you need it.`, goal: perc ? "Even notes at 80 without looking down for long." : "Clean, even tonguing at 80, up and back." },
+    perc
+      ? { id:"p-sticking", t:"Play it with right‑hand lead", how:"Start on the right hand, then try it starting left. Keep the sticking even.", goal:"Clean both ways at 80." }
+      : { id:"p-slur", t:"Play it slurred", how:`Tongue only the first ${first} and keep the air moving while the ${I.dia === "slide" ? "slide moves (use a soft \"doo\" tongue for slide changes)" : "fingers change"}.`, goal:"Smooth connections with no bumps between notes." },
+    { id:"p-memory", t:"Play it from memory", how:"Close the book and play it in quarter notes at 80.", goal:"Three times in a row without a wrong note." },
+  ]});
+
+  // 9. Repertoire
+  const s2 = perc ? "Say + Air sticks" : "Say + Slam";
+  G.push({ id:"ee", name:"Essential Elements repertoire", intro: perc
+      ? "The lines you're working toward in Book 1. Work each one in three steps. Say: speak the counts or note names in rhythm. Say + Air sticks: say them while playing the sticking in the air or on your knees. Play slow: play below tempo with the metronome."
+      : `The lines you're working toward in Book 1. Work each one in three steps. Say: speak the note names in rhythm. Say + Slam: speak the names while ${I.dia === "slide" ? "snapping the slide to each position" : "slamming your fingers down"} in rhythm. Play slow: play below tempo with the metronome.`,
+    steps: [["say","Say"],["slam",s2],["slow","Play slow"]],
+    skills: EE.map(e => ({ id:"ee" + e.n, num:"#" + e.n, t: e.name || "Exercise " + e.n, ee:true,
+      goal: e.name ? "You play the whole song at the book's tempo with steady counting and no stops." : "You play the whole line with the metronome, counting rests, with no stops." })) });
+
+  // 10. Care
+  G.push({ id:"care", name:"Instrument care", intro:"A well‑kept instrument plays easier and costs less to fix.", skills: I.care });
+  return G;
+}
+const GROUPS_BY = Object.fromEntries(INST_ORDER.map(id => [id, buildGroups(id)]));
+
+function routineFor(id) {
+  const I = INSTRUMENTS[id];
+  const first = I.family === "brass" ? "Breathing and mouthpiece buzzing"
+    : I.family === "perc" ? "Grip check and full strokes, each hand"
+    : I.sound === "headjoint" ? "Breathing and headjoint sounds" : "Breathing and mouthpiece sounds";
+  const second = I.family === "perc" ? "Rudiments slowly with the metronome" : `Long tones on ${I.penta.join(" ")}, metronome at 60`;
+  const last = I.family === "perc" ? "Play a line you've got, then cover the instruments" : I.family === "brass" ? "Play a song you've got, then empty the water and pack up" : "Play a song you've got, then swab and pack up";
+  return [["3 min", first], ["4 min", second], ["3 min", `Penta‑scale${I.family === "perc" ? " on bells" : ""}: ${I.penta.join(" ")} and back`], ["7 min", "Your Essential Elements lines: Say, " + (I.family === "perc" ? "Say + Air sticks" : "Say + Slam") + ", Play slow"], ["3 min", last]];
+}
+function logTagsFor(id) {
+  const I = INSTRUMENTS[id];
+  const fund = I.family === "perc"
+    ? [["penta","Penta‑scale (bells)"],["rudiments","Rudiments"],["strokes","Strokes"],["rhythm","Counting & clapping"],["other","Other music"]]
+    : [["penta","Penta‑scale"],["longtones","Long tones"],[I.family === "brass" ? "buzz" : "sound", I.family === "brass" ? "Buzzing" : I.sound === "headjoint" ? "Headjoint" : "Reed & mouthpiece"],
+       ...(I.family === "brass" ? [["slurs","Lip slurs"]] : []), ["tonguing","Tonguing"], ["rhythm","Counting & clapping"], ["other","Other music"]];
+  return [
+    { group:"Essential Elements", items: EE.map(e => ({ id:"ee" + e.n, label:"#" + e.n + (e.name ? " " + e.name : "") })) },
+    { group:"Fundamentals", items: fund.map(([i, l]) => ({ id:i, label:l })) },
+  ];
+}
+
+// =====================================================================
+// Helpers
+// =====================================================================
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function weekStart(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const off = (x.getDay() + 6) % 7; return addDays(x, -off); }
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const ORD = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : n % 10 === 1 ? "st" : n % 10 === 2 ? "nd" : n % 10 === 3 ? "rd" : "th");
+
+// =====================================================================
+// State
+// =====================================================================
+const LS = { status:"trumpet-skills-v1", steps:"trumpet-steps-v1", goal:"trumpet-goal-v1", log:"trumpet-log-v1", inst:"band-inst-v1" };
+function lsGet(k, fallback) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? fallback : v; } catch (e) { return fallback; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+// Earlier versions were trumpet-only and stored keys without an instrument prefix.
+function migrateKeys(obj) {
+  const out = {};
+  for (const [k, v] of Object.entries(obj || {})) out[k.includes(":") ? k : "trumpet:" + k] = v;
+  return out;
+}
+function migrateLog(arr) { return (Array.isArray(arr) ? arr : []).map(e => e.inst ? e : { ...e, inst:"trumpet" }); }
+
+let status = migrateKeys(lsGet(LS.status, {}));
+let steps = migrateKeys(lsGet(LS.steps, {}));
+let weeklyGoal = +lsGet(LS.goal, 100) || 100;
+let log = migrateLog(lsGet(LS.log, []));
+let inst = lsGet(LS.inst, null);
+if (!INSTRUMENTS[inst]) inst = (Object.keys(status).length || log.length) ? "trumpet" : "flute";
+let view = "skills";
+let filter = "all";
+let selectedTags = new Set();
+
+let progressDoc = null, logCol = null;
+let pendingWrite = null, writing = false;
+
+const sk = id => inst + ":" + id;   // status key for the current instrument
+const I = () => INSTRUMENTS[inst];
+const GROUPS = () => GROUPS_BY[inst];
+const ALL = () => GROUPS().flatMap(g => g.skills);
+const instLog = () => log.filter(e => e.inst === inst);
+
+function setSync(msg) { document.getElementById("sync").textContent = msg; }
+const SYNC_OK = "Saved to your account. It follows you to any device.";
+
+async function flushProgress() {
+  if (!progressDoc || writing || !pendingWrite) return;
+  writing = true;
+  const data = pendingWrite; pendingWrite = null;
+  try { await progressDoc.set(data); setSync(SYNC_OK); }
+  catch (e) { setSync("Saved in this browser. Your account copy didn't update."); }
+  writing = false;
+  if (pendingWrite) flushProgress();
+}
+function persistProgress() {
+  lsSet(LS.status, status); lsSet(LS.steps, steps); lsSet(LS.goal, weeklyGoal); lsSet(LS.inst, inst);
+  if (progressDoc) { pendingWrite = { status: {...status}, steps: {...steps}, weeklyGoal, instrument: inst, updatedAt: Date.now() }; flushProgress(); }
+}
+function sortLog() { log.sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || 0) - (a.createdAt || 0)); }
+function saveLogLocal() { lsSet(LS.log, log); }
+
+// =====================================================================
+// Diagrams
+// =====================================================================
+const KEY_NAMES = {
+  flute: ["thumb","L1","L2","L3","R1","R2","R3","E♭ key"],
+  clarinet: ["thumb hole","register key","L1","L2","L3","R1","R2","R3"],
+  sax: ["octave key","L1","L2","L3","R1","R2","R3"],
+};
+const KEY_LAYOUT = {   // groups of [index, shape]
+  flute: [[[0,"sm"]],[[1],[2],[3]],[[4],[5],[6]],[[7,"ov"]]],
+  clarinet: [[[0,"sm"],[1,"ov"]],[[2],[3],[4]],[[5],[6],[7]]],
+  sax: [[[0,"ov"]],[[1],[2],[3]],[[4],[5],[6]]],
+};
+function fingerText(code, dia) {
+  if (dia === "valves") return code === "0" ? "open" : code.split("").join("‑");
+  if (dia === "slide") return ORD(+code) + " position";
+  if (dia === "bells") return code === "up" ? "upper row" : "lower row";
+  const pressed = KEY_NAMES[dia].filter((_, i) => code[i] === "1");
+  return pressed.length ? pressed.join(", ") : "nothing pressed";
+}
+function diagramHTML(code, dia) {
+  if (dia === "valves") return `<span class="dia">${[1,2,3].map(n => `<i class="${code.includes(String(n)) ? "dn" : ""}"></i>`).join("")}</span>`;
+  if (dia === "slide") return `<span class="dia slide">${[1,2,3,4,5,6,7].map(n => `<i class="${+code === n ? "dn" : ""}"></i>`).join("")}</span>`;
+  if (dia === "bells") return `<span class="dia bells"><i class="up ${code === "up" ? "dn" : ""}"></i><i class="${code === "low" ? "dn" : ""}"></i></span>`;
+  return `<span class="dia">${KEY_LAYOUT[dia].map(g => g.map(([i, shape]) => `<i class="${shape || ""} ${code[i] === "1" ? "dn" : ""}"></i>`).join("")).join('<span class="gap"></span>')}</span>`;
+}
+function noteHTML(n) {
+  const ins = I(), [, code] = ins.notes[n], dia = ins.dia;
+  const caption = dia === "valves" ? fingerText(code, dia) : dia === "slide" ? ORD(+code) : dia === "bells" ? (code === "up" ? "upper" : "lower") : "";
+  return `<div class="note" title="${esc(n)}: ${esc(fingerText(code, dia))}"><span class="nm">${esc(n)}</span>${diagramHTML(code, dia)}${caption ? `<span class="fg">${caption}</span>` : ""}</div>`;
+}
+
+// =====================================================================
+// Render: chrome
+// =====================================================================
+const viewHash = (id, v) => "#" + id + (v === "skills" ? "" : "-" + v);
+function renderChrome() {
+  const ins = I();
+  document.getElementById("inst-tabs").innerHTML = INST_ORDER.map(id => {
+    const v = (view === "tuner" && INSTRUMENTS[id].family === "perc") ? "skills" : view;
+    return `<a href="${viewHash(id, v)}" ${id === inst ? 'aria-current="page"' : ""}>${INSTRUMENTS[id].name}</a>`;
+  }).join("");
+  document.getElementById("inst-line").textContent = ins.line;
+  const views = [["skills","Skills"],["log","Practice log"]];
+  if (ins.family !== "perc") views.push(["tuner","Tuner"]);
+  document.getElementById("view-tabs").innerHTML = views.map(([v, l]) =>
+    `<a href="${viewHash(inst, v)}" ${v === view ? 'aria-current="page"' : ""}>${l}</a>`).join("");
+  document.getElementById("mini-link").href = viewHash(inst, "log");
+  document.getElementById("routine").innerHTML = routineFor(inst).map(([t, s]) => `<li><b>${t}</b><span>${esc(s)}</span></li>`).join("");
+  document.getElementById("skills-foot").innerHTML = `<p>${esc(ins.diaNote)}</p>`;
+  document.getElementById("view-skills").hidden = view !== "skills";
+  document.getElementById("view-log").hidden = view !== "log";
+  document.getElementById("view-tuner").hidden = view !== "tuner";
+}
+
+// =====================================================================
+// Render: skills
+// =====================================================================
+function skillHTML(s, g) {
+  const st = status[sk(s.id)] || 0;
+  const title = (s.num ? `<span class="num">${s.num}</span>` : "") + esc(s.t);
+  const label = (s.num ? s.num + " " : "") + s.t;
+  const stepsHTML = s.ee ? `<div class="steps">${g.steps.map(([k, l], i) => {
+    const key = sk(s.id + "." + k), domId = `${inst}-${s.id}-${k}`;
+    return `<label class="step" for="${domId}"><input type="checkbox" id="${domId}" data-step="${s.id}.${k}" ${steps[key] ? "checked" : ""}><span class="k">${i + 1}</span>${esc(l)}</label>`;
+  }).join("")}</div>` : "";
+  return `<article class="skill" data-s="${st}">
+    <h3>${title}</h3>
+    <button type="button" class="chip" data-id="${s.id}" data-s="${st}" aria-label="${esc(label)}: ${LABEL[st]}. Tap to change.">${LABEL[st]}</button>
+    ${s.how ? `<p class="how">${esc(s.how)}</p>` : ""}
+    ${stepsHTML}
+    <p class="goal"><strong>You've got it when</strong> ${esc(s.goal)}</p>
+    ${s.notes ? `<div class="notes">${s.notes.map(noteHTML).join("")}</div>` : ""}
+  </article>`;
+}
+function renderGroups() {
+  let html = "", shown = 0;
+  for (const g of GROUPS()) {
+    const list = g.skills.filter(s => filter === "all" || String(status[sk(s.id)] || 0) === filter);
+    if (!list.length) continue;
+    shown += list.length;
+    const done = g.skills.filter(s => status[sk(s.id)] === 2).length;
+    html += `<section class="group" id="g-${g.id}">
+      <div class="group-head"><h2>${esc(g.name)}</h2><span class="ct">${done} / ${g.skills.length} got it</span></div>
+      <p class="group-intro">${esc(g.intro)}</p>
+      <div class="skills">${list.map(s => skillHTML(s, g)).join("")}</div>
+    </section>`;
+  }
+  if (!shown) html = `<p class="empty">No ${esc(I().name.toLowerCase())} skills are marked "${LABEL[+filter]}" yet.</p>`;
+  document.getElementById("groups").innerHTML = html;
+}
+function renderSummary() {
+  const all = ALL(), total = all.length;
+  const d = all.filter(s => status[sk(s.id)] === 2).length;
+  const w = all.filter(s => status[sk(s.id)] === 1).length;
+  document.getElementById("prog-h").textContent = `Your ${I().name.toLowerCase()} progress`;
+  document.getElementById("pct").innerHTML = `${Math.round(d / total * 100)}%<small> · ${d} of ${total}</small>`;
+  document.getElementById("bar-d").style.width = (d / total * 100) + "%";
+  document.getElementById("bar-w").style.width = (w / total * 100) + "%";
+  document.getElementById("n-done").textContent = d;
+  document.getElementById("n-work").textContent = w;
+  document.getElementById("n-todo").textContent = total - d - w;
+  document.getElementById("cats").innerHTML = GROUPS().map(g => {
+    const c = g.skills.filter(s => status[sk(s.id)] === 2).length;
+    return `<li><a href="${viewHash(inst, "skills")}" data-g="${g.id}"><span>${esc(g.name)}</span><span class="ct ${c === g.skills.length ? "full" : ""}">${c}/${g.skills.length}</span></a></li>`;
+  }).join("");
+}
+
+// =====================================================================
+// Render: log
+// =====================================================================
+function renderLog() {
+  const entries = instLog();
+  const byDay = {};
+  for (const e of entries) byDay[e.date] = (byDay[e.date] || 0) + (+e.minutes || 0);
+  const today = new Date();
+  const ws = weekStart(today);
+  let weekMin = 0, weekDays = 0;
+  for (let i = 0; i < 7; i++) { const k = ymd(addDays(ws, i)); if (byDay[k]) { weekMin += byDay[k]; weekDays++; } }
+  let streak = 0, cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (!byDay[ymd(cursor)]) cursor = addDays(cursor, -1);
+  while (byDay[ymd(cursor)]) { streak++; cursor = addDays(cursor, -1); }
+  const totalMin = entries.reduce((a, e) => a + (+e.minutes || 0), 0);
+  const pctGoal = Math.min(100, weekMin / weeklyGoal * 100);
+
+  document.getElementById("s-week").innerHTML = `${weekMin}<small> / ${weeklyGoal} min</small>`;
+  document.getElementById("s-week-bar").style.width = pctGoal + "%";
+  document.getElementById("s-days").innerHTML = `${weekDays}<small> / 7</small>`;
+  document.getElementById("s-streak").innerHTML = `${streak}<small> ${streak === 1 ? "day" : "days"}</small>`;
+  document.getElementById("s-streak-sub").textContent = byDay[ymd(today)] ? "Including today" : (streak ? "Practice today to keep it going" : "Practice today to start one");
+  document.getElementById("s-total").innerHTML = totalMin >= 60 ? `${(totalMin / 60).toFixed(1)}<small> hr</small>` : `${totalMin}<small> min</small>`;
+  document.getElementById("s-count").textContent = `${entries.length} ${entries.length === 1 ? "session" : "sessions"}`;
+  document.getElementById("mini-week").textContent = `${weekMin} / ${weeklyGoal} min`;
+  document.getElementById("mini-bar").style.width = pctGoal + "%";
+  document.getElementById("lf-h").textContent = `Log a ${I().name.toLowerCase()} practice session`;
+  const gi = document.getElementById("goal-input");
+  if (document.activeElement !== gi) gi.value = weeklyGoal;
+
+  const days = [];
+  for (let i = 13; i >= 0; i--) { const d = addDays(new Date(today.getFullYear(), today.getMonth(), today.getDate()), -i); days.push({ d, k: ymd(d), m: byDay[ymd(d)] || 0 }); }
+  const peak = Math.max(30, ...days.map(x => x.m));
+  const step = peak <= 40 ? 10 : peak <= 80 ? 20 : peak <= 200 ? 50 : 100;
+  const max = Math.ceil(peak / step) * step;
+  const ticks = [max / 2, max];
+  document.getElementById("yaxis").innerHTML = ticks.map(t => `<span style="top:${(1 - t / max) * 100}%">${t}</span>`).join("") + `<span style="top:100%">0</span>`;
+  document.getElementById("cols").innerHTML = ticks.map(t => `<div class="gridline" style="top:${(1 - t / max) * 100}%"></div>`).join("") +
+    days.map((x, i) => {
+      const lbl = `${DOW[x.d.getDay()]} ${MON[x.d.getMonth()]} ${x.d.getDate()}: ${x.m} min`;
+      return `<div class="col ${x.m ? "" : "zero"} ${i === 13 ? "today" : ""}" tabindex="0" role="img" aria-label="${lbl}" data-tip="${lbl}"><i style="height:${x.m / max * 100}%"></i></div>`;
+    }).join("");
+  document.getElementById("xlabels").innerHTML = days.map((x, i) => `<span>${i === 13 ? "Today" : (i % 2 === 1 ? "" : DOW[x.d.getDay()].slice(0, 2))}</span>`).join("");
+
+  const tagLabel = Object.fromEntries(logTagsFor(inst).flatMap(g => g.items.map(i => [i.id, i.label])));
+  const list = document.getElementById("entries");
+  if (!entries.length) {
+    list.innerHTML = `<li class="log-empty">No ${esc(I().name.toLowerCase())} sessions yet. Fill in the form above after you practice, and your minutes, streak and chart will build from there.</li>`;
+  } else {
+    list.innerHTML = entries.slice(0, 60).map(e => {
+      const d = parseYmd(e.date);
+      const tags = (e.items || []).filter(t => tagLabel[t]).map(t => `<span>${esc(tagLabel[t])}</span>`).join("");
+      return `<li class="entry">
+        <div class="when"><b>${+e.minutes} min</b>${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}</div>
+        <div class="what">
+          ${tags ? `<div class="etags">${tags}</div>` : ""}
+          <div class="enote ${e.note ? "" : "none"}">${e.note ? esc(e.note) : "No notes"}</div>
+        </div>
+        <button type="button" class="btn small del" data-del="${esc(e.id)}">Delete</button>
+      </li>`;
+    }).join("");
+  }
+}
+function renderTags() {
+  document.getElementById("log-tags").innerHTML = logTagsFor(inst).map(g =>
+    `<span class="tag-group">${esc(g.group)}</span>` +
+    g.items.map(i => `<button type="button" class="tag" data-tag="${i.id}" aria-pressed="${selectedTags.has(i.id)}">${esc(i.label)}</button>`).join("")
+  ).join("");
+}
+
+function render() { renderChrome(); renderGroups(); renderSummary(); renderLog(); renderTags(); if (I().family !== "perc") { renderTargets(); renderLadder(); } }
+
+// =====================================================================
+// Routing: #flute, #flute-log, #flute-tuner …
+// =====================================================================
+function route() {
+  const h = location.hash.replace(/^#/, "");
+  const [id, v] = h.split("-");
+  const prevInst = inst;
+  if (INSTRUMENTS[id]) inst = id;
+  else if (h === "log" || h === "tuner") { view = h; }
+  view = INSTRUMENTS[id] ? (v === "log" || v === "tuner" ? v : "skills") : (h === "log" || h === "tuner" ? h : "skills");
+  if (view === "tuner" && I().family === "perc") view = "skills";
+  if (inst !== prevInst) {
+    selectedTags.clear(); filter = "all";
+    document.querySelectorAll(".filters button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === "all")));
+    tunerTarget = INSTRUMENTS[inst].penta ? INSTRUMENTS[inst].penta[INSTRUMENTS[inst].penta.length - 1] : null;
+    lsSet(LS.inst, inst);
+    if (progressDoc) persistProgress();
+    if (typeof clearReading === "function" && INSTRUMENTS[inst].family !== "perc") { lastHit = null; }
+    document.getElementById("clip-panel").hidden = true;
+  }
+  if (view !== "tuner") stopMic();
+  render();
+  if (INSTRUMENTS[inst].family !== "perc") clearReading();
+}
+window.addEventListener("hashchange", route);
+
+// =====================================================================
+// Events: skills
+// =====================================================================
+document.getElementById("groups").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  const key = sk(chip.dataset.id);
+  status[key] = ((status[key] || 0) + 1) % 3;
+  if (!status[key]) delete status[key];
+  persistProgress();
+  renderGroups(); renderSummary();
+  const again = document.querySelector(`.chip[data-id="${chip.dataset.id}"]`);
+  if (again) again.focus();
+});
+document.getElementById("groups").addEventListener("change", e => {
+  const box = e.target.closest("input[data-step]");
+  if (!box) return;
+  const raw = box.dataset.step, key = sk(raw), skill = sk(raw.split(".")[0]);
+  if (box.checked) steps[key] = true; else delete steps[key];
+  if (box.checked && !status[skill]) status[skill] = 1;
+  persistProgress();
+  renderGroups(); renderSummary();
+  const again = document.querySelector(`input[data-step="${raw}"]`);
+  if (again) again.focus();
+});
+document.getElementById("cats").addEventListener("click", e => {
+  const a = e.target.closest("a[data-g]");
+  if (!a) return;
+  e.preventDefault();
+  const target = viewHash(inst, "skills");
+  if (location.hash !== target && !(target === "#" + inst && location.hash === "")) location.hash = target;
+  if (filter !== "all") setFilter("all");
+  requestAnimationFrame(() => {
+    const el = document.getElementById("g-" + a.dataset.g);
+    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
+});
+function setFilter(f) {
+  filter = f;
+  document.querySelectorAll(".filters button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === f)));
+  renderGroups();
+}
+document.querySelector(".filters").addEventListener("click", e => {
+  const b = e.target.closest("button[data-f]");
+  if (b) setFilter(b.dataset.f);
+});
+const confirmEl = document.getElementById("reset-confirm");
+document.getElementById("reset").addEventListener("click", () => { confirmEl.hidden = false; });
+document.getElementById("reset-no").addEventListener("click", () => { confirmEl.hidden = true; });
+document.getElementById("reset-yes").addEventListener("click", () => {
+  const pre = inst + ":";
+  for (const k of Object.keys(status)) if (k.startsWith(pre)) delete status[k];
+  for (const k of Object.keys(steps)) if (k.startsWith(pre)) delete steps[k];
+  confirmEl.hidden = true; persistProgress(); renderGroups(); renderSummary();
+});
+
+// =====================================================================
+// Events: log
+// =====================================================================
+const dateIn = document.getElementById("log-date"), minIn = document.getElementById("log-min");
+const noteIn = document.getElementById("log-note"), msg = document.getElementById("form-msg");
+dateIn.value = ymd(new Date());
+dateIn.max = ymd(new Date());
+document.querySelectorAll("[data-min]").forEach(b => b.addEventListener("click", () => { minIn.value = b.dataset.min; }));
+document.getElementById("log-tags").addEventListener("click", e => {
+  const b = e.target.closest("[data-tag]");
+  if (!b) return;
+  const t = b.dataset.tag;
+  selectedTags.has(t) ? selectedTags.delete(t) : selectedTags.add(t);
+  b.setAttribute("aria-pressed", String(selectedTags.has(t)));
+});
+document.getElementById("log-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const minutes = Math.round(+minIn.value);
+  if (!dateIn.value) { msg.className = "form-msg err"; msg.textContent = "Pick the date you practiced."; dateIn.focus(); return; }
+  if (!minutes || minutes < 1 || minutes > 600) { msg.className = "form-msg err"; msg.textContent = "Enter minutes between 1 and 600."; minIn.focus(); return; }
+  const entry = { id: newId(), inst, date: dateIn.value, minutes, items: [...selectedTags], note: noteIn.value.trim().slice(0, 600), createdAt: Date.now(), synced: false };
+  log.push(entry); sortLog(); saveLogLocal();
+  selectedTags.clear(); noteIn.value = ""; renderTags(); renderLog();
+  msg.className = "form-msg"; msg.textContent = `Logged ${minutes} minutes.`;
+  if (logCol) {
+    const { id, synced, ...body } = entry;
+    try { await logCol.doc(id).set(body); entry.synced = true; saveLogLocal(); setSync(SYNC_OK); }
+    catch (err) { setSync("Saved in this browser. Your account copy didn't update."); }
+  }
+});
+document.getElementById("entries").addEventListener("click", async e => {
+  const b = e.target.closest("[data-del]");
+  if (!b) return;
+  if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirm delete"; return; }
+  const id = b.dataset.del;
+  log = log.filter(x => x.id !== id); saveLogLocal(); renderLog();
+  if (logCol) { try { await logCol.doc(id).delete(); } catch (err) {} }
+});
+const goalIn = document.getElementById("goal-input");
+goalIn.addEventListener("change", () => {
+  const v = Math.round(+goalIn.value);
+  if (v >= 10 && v <= 2000) { weeklyGoal = v; persistProgress(); renderLog(); } else { goalIn.value = weeklyGoal; }
+});
+
+const tip = document.getElementById("tip"), chartWrap = document.getElementById("chart-wrap");
+function showTip(col) {
+  const r = col.getBoundingClientRect(), w = chartWrap.getBoundingClientRect();
+  const bar = col.querySelector("i").getBoundingClientRect();
+  tip.textContent = col.dataset.tip;
+  tip.hidden = false;
+  const half = tip.offsetWidth / 2;
+  tip.style.left = Math.min(Math.max(r.left - w.left + r.width / 2, half), w.width - half) + "px";
+  tip.style.top = (bar.top - w.top - 6) + "px";
+}
+const colsEl = document.getElementById("cols");
+colsEl.addEventListener("mouseover", e => { const c = e.target.closest(".col"); if (c) showTip(c); });
+colsEl.addEventListener("mouseleave", () => { tip.hidden = true; });
+colsEl.addEventListener("focusin", e => { const c = e.target.closest(".col"); if (c) showTip(c); });
+colsEl.addEventListener("focusout", () => { tip.hidden = true; });
+
+// =====================================================================
+// Audio: metronome
+// =====================================================================
+let actx = null, timer = null, nextTime = 0, beat = 0, master = null, noiseBuf = null;
+const bpmIn = document.getElementById("bpm"), bpmOut = document.getElementById("bpm-out");
+const dots = [...document.querySelectorAll("#beats span")];
+const metroBtn = document.getElementById("metro-btn");
+const volIn = document.getElementById("vol"), volOut = document.getElementById("vol-out");
+const volGain = () => Math.pow(+volIn.value / 100, 1.5) * 3;
+volIn.addEventListener("input", () => { volOut.textContent = volIn.value; if (master) master.gain.value = volGain(); });
+function setBpm(v) { bpmIn.value = v; bpmOut.textContent = v; }
+bpmIn.addEventListener("input", () => setBpm(bpmIn.value));
+document.querySelectorAll("[data-bpm]").forEach(b => b.addEventListener("click", () => setBpm(b.dataset.bpm)));
+function ensureAudio() {
+  actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+  if (!master) {
+    const lim = actx.createDynamicsCompressor();
+    lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.05;
+    master = actx.createGain(); master.gain.value = volGain();
+    master.connect(lim).connect(actx.destination);
+    noiseBuf = actx.createBuffer(1, Math.floor(actx.sampleRate * 0.02), actx.sampleRate);
+    const ch = noiseBuf.getChannelData(0);
+    for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / ch.length);
+  }
+  return actx;
+}
+function click(time, accent) {
+  const f = accent ? 1760 : 1175;
+  const o = actx.createOscillator(); o.type = "square"; o.frequency.value = f;
+  const o2 = actx.createOscillator(); o2.type = "triangle"; o2.frequency.value = f / 2;
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(accent ? 1 : 0.8, time + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
+  o.connect(g); o2.connect(g); g.connect(master);
+  o.start(time); o.stop(time + 0.09); o2.start(time); o2.stop(time + 0.09);
+  const n = actx.createBufferSource(); n.buffer = noiseBuf;
+  const hp = actx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 2500;
+  const ng = actx.createGain(); ng.gain.value = accent ? 0.9 : 0.6;
+  n.connect(hp).connect(ng).connect(master); n.start(time);
+  const b = beat, delay = Math.max(0, (time - actx.currentTime) * 1000);
+  setTimeout(() => { dots.forEach((d, i) => { d.classList.toggle("on", i === b); d.classList.toggle("first", i === 0); }); }, delay);
+}
+function schedule() {
+  while (nextTime < actx.currentTime + 0.12) {
+    click(nextTime, beat === 0);
+    nextTime += 60 / +bpmIn.value;
+    beat = (beat + 1) % 4;
+  }
+}
+metroBtn.addEventListener("click", async () => {
+  if (timer) {
+    clearInterval(timer); timer = null; metroBtn.textContent = "Start";
+    dots.forEach(d => d.classList.remove("on"));
+    return;
+  }
+  try { ensureAudio(); await actx.resume(); } catch (e) { metroBtn.textContent = "Sound unavailable"; return; }
+  beat = 0; nextTime = actx.currentTime + 0.05;
+  timer = setInterval(schedule, 25);
+  metroBtn.textContent = "Stop";
+});
+
+// =====================================================================
+// Tuner
+// =====================================================================
+const PC = ["C","C♯","D","E♭","E","F","F♯","G","G♯","A","B♭","B"];
+let tunerTarget = INSTRUMENTS[inst].penta[INSTRUMENTS[inst].penta.length - 1];
+let lastHit = null;
+const tMsg = document.getElementById("tuner-msg");
+const detNote = document.getElementById("det-note"), detSub = document.getElementById("det-sub");
+const needle = document.getElementById("needle"), verdictEl = document.getElementById("verdict");
+
+function nameFor(m) {   // written MIDI -> name, using this instrument's own note names where possible
+  const ins = I();
+  for (const [n, [mm]] of Object.entries(ins.notes)) if (mm === m) return n;
+  return PC[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1);
+}
+const targetMidi = () => I().notes[tunerTarget][0];
+const VALVE_DROP = { "0":0, "2":1, "1":2, "12":3, "23":4, "13":5, "123":6 };
+function ladderFor() {   // [{label, m}] notes playable with the target's fingering, low to high
+  const ins = I(), code = ins.notes[tunerTarget][1];
+  if (ins.family === "brass") {
+    const drop = ins.dia === "slide" ? +code - 1 : VALVE_DROP[code];
+    return ins.open.map(([p, w]) => ({ label: ORD(p) + " partial", m: w - drop }));
+  }
+  const base = ins.base[tunerTarget];
+  return ins.series.map(([off, label]) => ({ label, m: base + off }));
+}
+function tipFor(above) {
+  const ins = I();
+  if (ins.family === "brass") return above ? "Use slower air and relax your lips." : "Use faster air and firm up the corners.";
+  if (ins.sound === "headjoint") return above ? "Slow the air and aim it a little lower." : "Use faster, more focused air with a smaller lip opening.";
+  if (ins.dia === "clarinet") return above ? "Check that the register key is up and your left thumb covers its hole, and don't bite." : "Firm the corners and support the air.";
+  return above ? "Check that the octave key is up, and loosen your bite." : "Press the octave key fully and support the air.";
+}
+function renderTargets() {
+  document.getElementById("tn-intro").textContent = I().family === "brass"
+    ? "Pick the note you're aiming for, then play it. The tuner shows the note you actually played, how in tune it is, and which partial you landed on. Hold each note steady for about two seconds."
+    : "Pick the note you're aiming for, then play it. The tuner shows the note you actually played, how in tune it is, and whether you landed in the right register. Hold each note steady for about two seconds.";
+  const names = I().penta.concat(I().extras).sort((a, b) => I().notes[a][0] - I().notes[b][0]);
+  document.getElementById("target-notes").innerHTML = names.map(n =>
+    `<button type="button" class="tag" data-target="${esc(n)}" aria-pressed="${n === tunerTarget}">${esc(n)}</button>`).join("");
+}
+function renderLadder() {
+  const ins = I(), code = ins.notes[tunerTarget][1], tm = targetMidi();
+  document.getElementById("ladder-h").textContent = ins.family === "brass"
+    ? `Partials on ${fingerText(code, ins.dia) === "open" ? "open (no valves)" : ins.dia === "slide" ? fingerText(code, ins.dia) : "valves " + fingerText(code, ins.dia)}`
+    : "Same fingering, other notes";
+  document.getElementById("ladder-sub").textContent = ins.family === "brass"
+    ? `${tunerTarget} shares its ${ins.dia === "slide" ? "position" : "fingering"} with every note below. Faster air and firmer lip corners move you up the ladder; slower air and relaxed lips move you down.`
+    : ins.sound === "headjoint" ? `With ${tunerTarget}'s fingering, the flute can also sound these notes. Air that's too fast jumps up; air that's too slow drops down.`
+    : ins.dia === "clarinet" ? `With ${tunerTarget}'s fingering, adding the register key jumps up twelve notes. A squeak often lands on the upper note.`
+    : `With ${tunerTarget}'s fingering, the octave key moves the note up an octave.`;
+  document.getElementById("ladder").innerHTML = ladderFor().slice().reverse().map(x =>
+    `<li class="${x.m === tm ? "target" : ""} ${x.m === lastHit ? "hit" : ""}"><span class="pn">${esc(x.label)}</span><span class="pnote">${esc(nameFor(x.m))}</span><span class="ptag">${x.m === tm ? "Your target" : x.m === lastHit ? "You played this" : ""}</span></li>`).join("");
+}
+function showReading(freq, cents) {
+  const ins = I();
+  const exact = 69 + 12 * Math.log2(freq / 440) + ins.transpose;
+  const m = Math.round(exact);
+  const c = cents != null ? cents : Math.round((exact - m) * 100);
+  lastHit = m;
+  detNote.textContent = nameFor(m);
+  const concert = ins.transpose ? ` · sounds as concert ${PC[(((m - ins.transpose) % 12) + 12) % 12]}` : "";
+  detSub.textContent = `${c > 0 ? "+" : ""}${c} cents${concert} · ${Math.round(freq)} Hz`;
+  needle.hidden = false;
+  needle.style.left = (50 + Math.max(-50, Math.min(50, c))) + "%";
+  const tm = targetMidi(), lad = ladderFor(), tIdx = lad.findIndex(x => x.m === tm), hIdx = lad.findIndex(x => x.m === m);
+  if (m === tm) {
+    verdictEl.className = "verdict good";
+    verdictEl.textContent = Math.abs(c) <= 10 ? "Right note, and in tune." : c > 0 ? "Right note, a little high (sharp)." : "Right note, a little low (flat).";
+  } else if (hIdx >= 0) {
+    verdictEl.className = "verdict warn";
+    const what = ins.family === "brass" ? `the ${lad[hIdx].label}` : lad[hIdx].label.toLowerCase();
+    verdictEl.textContent = `That's ${nameFor(m)} (${what}), ${hIdx > tIdx ? "above" : "below"} your target. ${tipFor(hIdx > tIdx)}`;
+  } else {
+    verdictEl.className = "verdict warn";
+    verdictEl.textContent = `That's ${nameFor(m)}. Check your ${ins.dia === "slide" ? "slide position" : "fingering"}: ${tunerTarget} is ${fingerText(ins.notes[tunerTarget][1], ins.dia)}.`;
+  }
+  renderLadder();
+}
+function clearReading() {
+  lastHit = null; detNote.textContent = "–"; detSub.textContent = "Waiting for a note"; needle.hidden = true;
+  verdictEl.className = "verdict"; verdictEl.textContent = "Play a note to see if you hit it.";
+  if (I().family !== "perc") renderLadder();
+}
+document.getElementById("target-notes").addEventListener("click", e => {
+  const b = e.target.closest("[data-target]"); if (!b) return;
+  tunerTarget = b.dataset.target; renderTargets(); clearReading();
+  const again = document.querySelector(`[data-target="${CSS.escape(tunerTarget)}"]`);
+  if (again) again.focus();
+});
+
+// YIN pitch detection over roughly 60–2000 Hz, which covers trombone through flute.
+function detectPitch(buf, sr) {
+  const n = buf.length; let rms = 0;
+  for (let i = 0; i < n; i++) rms += buf[i] * buf[i];
+  rms = Math.sqrt(rms / n);
+  if (rms < 0.01) return null;
+  const minLag = Math.floor(sr / 2000), maxLag = Math.min(Math.floor(sr / 60), Math.floor(n / 2));
+  const W = n - maxLag - 1, d = new Float32Array(maxLag + 2);
+  for (let tau = 1; tau <= maxLag + 1; tau++) {
+    let s = 0;
+    for (let i = 0; i < W; i++) { const x = buf[i] - buf[i + tau]; s += x * x; }
+    d[tau] = s;
+  }
+  const cm = new Float32Array(maxLag + 2); cm[0] = 1; let run = 0;
+  for (let tau = 1; tau <= maxLag + 1; tau++) { run += d[tau]; cm[tau] = run ? d[tau] * tau / run : 1; }
+  let tau = -1;
+  for (let t = minLag; t <= maxLag; t++) {
+    if (cm[t] < 0.15) { while (t + 1 <= maxLag && cm[t + 1] < cm[t]) t++; tau = t; break; }
+  }
+  if (tau < 2) return null;
+  const a = cm[tau - 1], b = cm[tau], c = cm[tau + 1];
+  const den = a - 2 * b + c, shift = den ? (a - c) / (2 * den) : 0;
+  return sr / (tau + (Math.abs(shift) < 1 ? shift : 0));
+}
+
+let micStream = null, micRaf = 0, micRecent = [];
+const micBtn = document.getElementById("mic-btn");
+function stopMic() {
+  if (micRaf) cancelAnimationFrame(micRaf); micRaf = 0;
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  micBtn.textContent = "Listen with microphone";
+}
+micBtn.addEventListener("click", async () => {
+  if (micStream) { stopMic(); tMsg.textContent = ""; return; }
+  try {
+    ensureAudio(); await actx.resume();
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  } catch (e) {
+    micStream = null;
+    tMsg.className = "tuner-msg err";
+    tMsg.textContent = "The microphone isn't available here. Record yourself holding the note with your phone's voice recorder, then use Upload a recording.";
+    return;
+  }
+  tMsg.className = "tuner-msg"; tMsg.textContent = "Listening. Hold the note steady.";
+  micBtn.textContent = "Stop listening";
+  document.getElementById("clip-panel").hidden = true;
+  const src = actx.createMediaStreamSource(micStream), an = actx.createAnalyser();
+  an.fftSize = 4096; src.connect(an);
+  const buf = new Float32Array(an.fftSize);
+  let quiet = 0;
+  const loop = () => {
+    an.getFloatTimeDomainData(buf);
+    const f = detectPitch(buf, actx.sampleRate);
+    if (f) {
+      quiet = 0; micRecent.push(f); if (micRecent.length > 5) micRecent.shift();
+      showReading(micRecent.slice().sort((a, b) => a - b)[Math.floor(micRecent.length / 2)]);
+    } else if (++quiet > 40) { micRecent = []; }
+    micRaf = requestAnimationFrame(loop);
+  };
+  loop();
+});
+
+document.getElementById("clip-in").addEventListener("change", async e => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  stopMic();
+  tMsg.className = "tuner-msg"; tMsg.textContent = `Reading ${file.name}…`;
+  let audio;
+  try {
+    ensureAudio();
+    const ab = await file.arrayBuffer();
+    audio = await new Promise((res, rej) => { const p = actx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+  } catch (err) {
+    tMsg.className = "tuner-msg err"; tMsg.textContent = "That file couldn't be read. Try an .m4a, .mp3 or .wav recording."; return;
+  }
+  const ins = I(), sr = audio.sampleRate, data = audio.getChannelData(0);
+  const N = 4096, hop = 1024, end = Math.min(data.length, sr * 30) - N;
+  const frames = [];
+  for (let i = 0; i < end; i += hop) {
+    const f = detectPitch(data.subarray(i, i + N), sr);
+    if (f) { const ex = 69 + 12 * Math.log2(f / 440) + ins.transpose; frames.push({ t: i / sr, m: Math.round(ex), c: (ex - Math.round(ex)) * 100, f }); }
+    else frames.push(null);
+  }
+  const segs = []; let cur = null, gap = 0;
+  for (const fr of frames) {
+    if (fr && cur && fr.m === cur.m) { cur.items.push(fr); gap = 0; continue; }
+    if (!fr && cur && gap < 1) { gap++; continue; }
+    if (cur && cur.items.length * hop / sr >= 0.15) segs.push(cur);
+    cur = fr ? { m: fr.m, items: [fr] } : null; gap = 0;
+  }
+  if (cur && cur.items.length * hop / sr >= 0.15) segs.push(cur);
+  const med = arr => arr.slice().sort((a, b) => a - b)[Math.floor(arr.length / 2)];
+  const notes = segs.map(s => ({ m: s.m, t: s.items[0].t, dur: s.items.length * hop / sr, c: Math.round(med(s.items.map(x => x.c))), f: med(s.items.map(x => x.f)) }));
+  const panel = document.getElementById("clip-panel"), box = document.getElementById("segs");
+  if (!notes.length) {
+    panel.hidden = true; clearReading();
+    tMsg.className = "tuner-msg err"; tMsg.textContent = "No steady notes found. Hold each note for two seconds, record from about a meter away, and keep background noise down."; return;
+  }
+  tMsg.className = "tuner-msg"; tMsg.textContent = `Found ${notes.length} ${notes.length === 1 ? "note" : "notes"} in ${file.name}.`;
+  panel.hidden = false;
+  const tm = targetMidi();
+  box.innerHTML = notes.map((n, i) =>
+    `<button type="button" class="seg ${n.m === tm ? "ok" : ""}" data-seg="${i}" aria-pressed="false"><b>${esc(nameFor(n.m))}</b><small>${n.t.toFixed(1)}s · ${n.c > 0 ? "+" : ""}${n.c}¢</small></button>`).join("");
+  box.onclick = ev => {
+    const b = ev.target.closest("[data-seg]"); if (!b) return;
+    box.querySelectorAll(".seg").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    const n = notes[+b.dataset.seg]; showReading(n.f, n.c);
+  };
+  let longest = 0; notes.forEach((n, i) => { if (n.dur > notes[longest].dur) longest = i; });
+  box.querySelector(`[data-seg="${longest}"]`).click();
+});
+
+document.getElementById("ref-btn").addEventListener("click", async () => {
+  try { ensureAudio(); await actx.resume(); } catch (e) { return; }
+  const f = 440 * Math.pow(2, (targetMidi() - I().transpose - 69) / 12), t = actx.currentTime + 0.02;
+  const o = actx.createOscillator(); o.type = "sawtooth"; o.frequency.value = f;
+  const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = Math.min(4000, f * 5);
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.06);
+  g.gain.setValueAtTime(0.35, t + 1.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 2);
+  o.connect(lp).connect(g).connect(master); o.start(t); o.stop(t + 2.05);
+});
+
+// =====================================================================
+// Boot
+// =====================================================================
+sortLog();
+if (!location.hash) { try { history.replaceState(null, "", viewHash(inst, "skills")); } catch (e) {} }
+route();
+(async () => {
+  if (!window.claude || !window.claude.use) return;
+  try {
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if (!db || !user) return;
+    const uid = await user.id();
+    if (!uid) return;
+    const base = `data/users/${uid}`;
+    progressDoc = db.doc(`${base}/progress`);
+    logCol = db.collection(`${base}/practice/log`);
+
+    const [snap, logSnap] = await Promise.all([progressDoc.get(), logCol.orderBy("date", "desc").limit(1000).get()]);
+    const remote = snap.exists ? (snap.data() || {}) : null;
+    if (remote && remote.status && typeof remote.status === "object") {
+      status = migrateKeys(remote.status);
+      steps = migrateKeys(remote.steps);
+      if (+remote.weeklyGoal >= 10) weeklyGoal = +remote.weeklyGoal;
+      lsSet(LS.status, status); lsSet(LS.steps, steps); lsSet(LS.goal, weeklyGoal);
+    } else if (Object.keys(status).length || Object.keys(steps).length || weeklyGoal !== 100) {
+      persistProgress();
+    }
+
+    const remoteLog = logSnap.docs.map(d => {
+      const x = d.data() || {};
+      return { id: d.id, inst: INSTRUMENTS[x.inst] ? x.inst : "trumpet", date: String(x.date || ""), minutes: +x.minutes || 0, items: Array.isArray(x.items) ? x.items : [], note: String(x.note || ""), createdAt: +x.createdAt || 0, synced: true };
+    }).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x.date));
+    const known = new Set(remoteLog.map(x => x.id));
+    const localOnly = log.filter(x => !known.has(x.id) && !x.synced);
+    for (const x of localOnly) { const { id, synced, ...body } = x; try { await logCol.doc(id).set(body); x.synced = true; } catch (e) {} }
+    log = remoteLog.concat(localOnly);
+    sortLog(); saveLogLocal();
+    render();
+    if (I().family !== "perc") clearReading();
+    setSync(SYNC_OK);
+  } catch (e) {
+    progressDoc = null; logCol = null;
+  }
+})();
+</script>
+
+</body></html>
