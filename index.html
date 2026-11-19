@@ -134,6 +134,18 @@ h1 {
 .metro-tempo .q { font-family: var(--font-music); font-size: 16px; font-weight: 400; }
 .metro-tempo b { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; display: inline-block; min-width: 3ch; text-align: center; }
 .metro-tempo .caret { font-size: 11px; color: var(--muted); }
+.metro-sub { background: none; border: 1px solid var(--line); color: var(--head); border-radius: 6px; padding: 3px 8px; line-height: 1.2; }
+.metro-sub .q, .metro-panel .q { font-family: var(--font-music); font-size: 17px; }
+.metro-sub:hover { background: var(--bg); }
+.metro-sub[aria-pressed="true"] { background: var(--brass-soft); border-color: var(--brass-fill); color: var(--brass); }
+.metro-sub:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.metro-panel [data-sub][aria-pressed="true"] { background: var(--btn); border-color: var(--btn); color: #ffffff; }
+.metro-tip { margin: 0; font-size: 12px; color: var(--muted); }
+.reset-box { display: grid; gap: 8px; justify-items: start; }
+.reset-ask { display: grid; gap: 8px; padding: 12px; border-radius: 8px; background: var(--work-soft); width: 100%; }
+.reset-ask p { margin: 0; font-size: 13.5px; color: var(--head); }
+.reset-log { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.reset-log input { accent-color: var(--work); margin: 0; }
 .metro-panel { width: min(300px, calc(100vw - 32px)); box-shadow: 0 8px 24px rgba(45, 32, 20, .16); }
 .metro-fab .beats span { width: 10px; height: 10px; }
 @media (max-width: 640px) { .brand-tag { display: none; } .metro-fab .beats { display: none; } }
@@ -364,6 +376,7 @@ textarea { resize: vertical; min-height: 64px; }
   <div class="metro-bar">
     <div class="beats" id="beats" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <button type="button" class="metro-tempo" id="metro-open" aria-expanded="false" aria-controls="metro-panel" aria-label="Metronome settings"><span class="q">♩ =</span> <b id="bpm-out">60</b> <span class="caret">▾</span></button>
+    <button type="button" class="metro-sub" id="metro-sub" aria-pressed="false" aria-label="Eighth-note subdivision" title="Eighth-note subdivision"><span class="q">♫</span></button>
     <button class="btn primary" id="metro-btn" type="button">Start</button>
   </div>
   <div class="panel metro-panel" id="metro-panel" hidden>
@@ -376,7 +389,15 @@ textarea { resize: vertical; min-height: 64px; }
       <button class="btn small" type="button" data-bpm="100">100</button>
       <button class="btn small" type="button" data-bpm="120">120</button>
     </div>
-    <div class="vol-row"><label for="vol">Volume</label><input type="range" id="vol" min="0" max="100" step="5" value="90"><span id="vol-out">90</span></div>
+    <div class="field">
+      <span class="bpm-label" id="sub-label">Subdivision</span>
+      <div class="reset-row" role="group" aria-labelledby="sub-label">
+        <button class="btn small" type="button" data-sub="1" aria-pressed="true"><span class="q">♩</span> Quarter notes</button>
+        <button class="btn small" type="button" data-sub="2" aria-pressed="false"><span class="q">♫</span> Eighth notes</button>
+      </div>
+    </div>
+    <div class="vol-row"><label for="vol">Volume</label><input type="range" id="vol" min="0" max="100" step="5" value="100"><span id="vol-out">100</span></div>
+    <p class="metro-tip">Still too quiet? Turn your device volume all the way up, or connect a Bluetooth speaker.</p>
   </div>
 </div>
 
@@ -408,6 +429,17 @@ textarea { resize: vertical; min-height: 64px; }
           <div class="bar" aria-hidden="true"><span class="b" id="mini-bar"></span></div>
           <a href="#log" id="mini-link">Log a session</a>
         </div>
+        <div class="reset-box">
+          <button type="button" class="btn small" id="reset-all">Reset progress</button>
+          <div class="reset-ask" id="reset-ask" hidden>
+            <p id="reset-q">Start fresh? This sets every skill and song step back to Not started.</p>
+            <label class="reset-log" for="reset-log"><input type="checkbox" id="reset-log"> <span id="reset-log-label">Also clear my practice log</span></label>
+            <div class="reset-row">
+              <button type="button" class="btn small primary" id="reset-all-yes">Yes, reset</button>
+              <button type="button" class="btn small" id="reset-all-no">Cancel</button>
+            </div>
+          </div>
+        </div>
         <div class="sync" id="sync">Saved in this browser.</div>
       </section>
 
@@ -428,13 +460,6 @@ textarea { resize: vertical; min-height: 64px; }
           <button type="button" data-f="2" aria-pressed="false">Got it</button>
         </div>
         <div id="groups"></div>
-        <div class="reset-row" style="margin-top:8px">
-          <button class="linkish" type="button" id="reset">Clear skill progress for this instrument</button>
-          <span id="reset-confirm" hidden>Clear every skill back to Not started?
-            <button class="btn" type="button" id="reset-yes">Yes, clear</button>
-            <button class="btn" type="button" id="reset-no">Keep my progress</button>
-          </span>
-        </div>
         <footer id="skills-foot"></footer>
       </div>
 
@@ -1309,14 +1334,26 @@ document.querySelector(".filters").addEventListener("click", e => {
   const b = e.target.closest("button[data-f]");
   if (b) setFilter(b.dataset.f);
 });
-const confirmEl = document.getElementById("reset-confirm");
-document.getElementById("reset").addEventListener("click", () => { confirmEl.hidden = false; });
-document.getElementById("reset-no").addEventListener("click", () => { confirmEl.hidden = true; });
-document.getElementById("reset-yes").addEventListener("click", () => {
+const resetAsk = document.getElementById("reset-ask"), resetAll = document.getElementById("reset-all"), resetLog = document.getElementById("reset-log");
+resetAll.addEventListener("click", () => {
+  const nm = I().name.toLowerCase();
+  document.getElementById("reset-q").textContent = `Start fresh? This sets every ${nm} skill and song step back to Not started.`;
+  document.getElementById("reset-log-label").textContent = `Also clear my ${nm} practice log`;
+  resetLog.checked = false; resetAsk.hidden = false; resetAll.hidden = true;
+  document.getElementById("reset-all-no").focus();
+});
+function closeResetAsk() { resetAsk.hidden = true; resetAll.hidden = false; }
+document.getElementById("reset-all-no").addEventListener("click", () => { closeResetAsk(); resetAll.focus(); });
+document.getElementById("reset-all-yes").addEventListener("click", async () => {
   const pre = inst + ":";
   for (const k of Object.keys(status)) if (k.startsWith(pre)) delete status[k];
   for (const k of Object.keys(steps)) if (k.startsWith(pre)) delete steps[k];
-  confirmEl.hidden = true; persistProgress(); renderGroups(); renderSummary();
+  persistProgress();
+  let gone = [];
+  if (resetLog.checked) { gone = log.filter(e => e.inst === inst); log = log.filter(e => e.inst !== inst); saveLogLocal(); }
+  closeResetAsk(); renderGroups(); renderSummary(); renderLog();
+  setSync(resetLog.checked ? "Progress and practice log cleared." : "Progress cleared. Your practice log is still there.");
+  if (logCol) for (const e of gone) { try { await logCol.doc(e.id).delete(); } catch (err) {} }
 });
 
 // =====================================================================
@@ -1382,12 +1419,12 @@ colsEl.addEventListener("focusout", () => { tip.hidden = true; });
 // =====================================================================
 // Audio: metronome
 // =====================================================================
-let actx = null, timer = null, nextTime = 0, beat = 0, master = null, noiseBuf = null;
+let actx = null, timer = null, nextTime = 0, tick = 0, sub = 1, master = null, clean = null, noiseBuf = null;
 const bpmIn = document.getElementById("bpm"), bpmOut = document.getElementById("bpm-out");
 const dots = [...document.querySelectorAll("#beats span")];
 const metroBtn = document.getElementById("metro-btn");
 const volIn = document.getElementById("vol"), volOut = document.getElementById("vol-out");
-const volGain = () => Math.pow(+volIn.value / 100, 1.5) * 3;
+const volGain = () => Math.pow(+volIn.value / 100, 1.4);
 volIn.addEventListener("input", () => { volOut.textContent = volIn.value; if (master) master.gain.value = volGain(); });
 function setBpm(v) { bpmIn.value = v; bpmOut.textContent = v; }
 bpmIn.addEventListener("input", () => setBpm(bpmIn.value));
@@ -1395,40 +1432,63 @@ document.querySelectorAll("[data-bpm]").forEach(b => b.addEventListener("click",
 function ensureAudio() {
   actx = actx || new (window.AudioContext || window.webkitAudioContext)();
   if (!master) {
+    // Click chain: volume -> saturation -> limiter. The saturation drives the click close to
+    // full scale, which sounds much louder than a clean peak at the same maximum level.
+    const shaper = actx.createWaveShaper(), K = 4, N = 2048, curve = new Float32Array(N);
+    for (let i = 0; i < N; i++) { const x = i / (N - 1) * 2 - 1; curve[i] = Math.tanh(K * x) / Math.tanh(K); }
+    shaper.curve = curve; shaper.oversample = "4x";
     const lim = actx.createDynamicsCompressor();
-    lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.05;
+    lim.threshold.value = -1; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.05;
     master = actx.createGain(); master.gain.value = volGain();
-    master.connect(lim).connect(actx.destination);
+    master.connect(shaper).connect(lim).connect(actx.destination);
+    clean = actx.createGain(); clean.gain.value = 0.9; clean.connect(actx.destination);   // reference tones stay undistorted
     noiseBuf = actx.createBuffer(1, Math.floor(actx.sampleRate * 0.02), actx.sampleRate);
     const ch = noiseBuf.getChannelData(0);
     for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / ch.length);
   }
   return actx;
 }
-function click(time, accent) {
-  const f = accent ? 1760 : 1175;
+// level: 2 = beat 1, 1 = other beats, 0 = eighth-note "and"
+function click(time, level, beatIdx) {
+  const f = level === 2 ? 2093 : level === 1 ? 1568 : 2637;
+  const len = level ? 0.11 : 0.06;
   const o = actx.createOscillator(); o.type = "square"; o.frequency.value = f;
-  const o2 = actx.createOscillator(); o2.type = "triangle"; o2.frequency.value = f / 2;
-  const g = actx.createGain();
+  const o2 = actx.createOscillator(); o2.type = "square"; o2.frequency.value = f / 2;
+  const g = actx.createGain(), peak = level === 2 ? 1.6 : level === 1 ? 1.3 : 0.55;
   g.gain.setValueAtTime(0.0001, time);
-  g.gain.exponentialRampToValueAtTime(accent ? 1 : 0.8, time + 0.001);
-  g.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
+  g.gain.exponentialRampToValueAtTime(peak, time + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + len);
   o.connect(g); o2.connect(g); g.connect(master);
-  o.start(time); o.stop(time + 0.09); o2.start(time); o2.stop(time + 0.09);
+  o.start(time); o.stop(time + len + 0.01); o2.start(time); o2.stop(time + len + 0.01);
   const n = actx.createBufferSource(); n.buffer = noiseBuf;
   const hp = actx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 2500;
-  const ng = actx.createGain(); ng.gain.value = accent ? 0.9 : 0.6;
+  const ng = actx.createGain(); ng.gain.value = level ? 1.2 : 0.4;
   n.connect(hp).connect(ng).connect(master); n.start(time);
-  const b = beat, delay = Math.max(0, (time - actx.currentTime) * 1000);
-  setTimeout(() => { dots.forEach((d, i) => { d.classList.toggle("on", i === b); d.classList.toggle("first", i === 0); }); }, delay);
+  if (!level) return;
+  const delay = Math.max(0, (time - actx.currentTime) * 1000);
+  setTimeout(() => { dots.forEach((d, i) => { d.classList.toggle("on", i === beatIdx); d.classList.toggle("first", i === 0); }); }, delay);
 }
 function schedule() {
   while (nextTime < actx.currentTime + 0.12) {
-    click(nextTime, beat === 0);
-    nextTime += 60 / +bpmIn.value;
-    beat = (beat + 1) % 4;
+    const main = tick % sub === 0, beatIdx = Math.floor(tick / sub) % 4;
+    click(nextTime, main ? (beatIdx === 0 ? 2 : 1) : 0, beatIdx);
+    nextTime += 60 / +bpmIn.value / sub;
+    tick++;
   }
 }
+const subBtn = document.getElementById("metro-sub");
+function setSub(n) {
+  if (n === sub) return;
+  if (timer) {   // keep the beat in place when switching mid-play
+    if (n === 1) { if (tick % 2) { nextTime += 60 / +bpmIn.value / 2; tick++; } tick /= 2; }
+    else tick *= 2;
+  }
+  sub = n;
+  subBtn.setAttribute("aria-pressed", String(n === 2));
+  document.querySelectorAll("[data-sub]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.sub === n)));
+}
+subBtn.addEventListener("click", () => setSub(sub === 2 ? 1 : 2));
+document.querySelectorAll("[data-sub]").forEach(b => b.addEventListener("click", () => setSub(+b.dataset.sub)));
 const metroOpen = document.getElementById("metro-open"), metroPanel = document.getElementById("metro-panel");
 function setMetroPanel(open) { metroPanel.hidden = !open; metroOpen.setAttribute("aria-expanded", String(open)); }
 metroOpen.addEventListener("click", () => setMetroPanel(metroPanel.hidden));
@@ -1441,7 +1501,7 @@ metroBtn.addEventListener("click", async () => {
     return;
   }
   try { ensureAudio(); await actx.resume(); } catch (e) { metroBtn.textContent = "Sound unavailable"; return; }
-  beat = 0; nextTime = actx.currentTime + 0.05;
+  tick = 0; nextTime = actx.currentTime + 0.05;
   timer = setInterval(schedule, 25);
   metroBtn.textContent = "Stop";
 });
@@ -1658,7 +1718,7 @@ document.getElementById("ref-btn").addEventListener("click", async () => {
   const g = actx.createGain();
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.06);
   g.gain.setValueAtTime(0.35, t + 1.6); g.gain.exponentialRampToValueAtTime(0.0001, t + 2);
-  o.connect(lp).connect(g).connect(master); o.start(t); o.stop(t + 2.05);
+  o.connect(lp).connect(g).connect(clean); o.start(t); o.stop(t + 2.05);
 });
 
 // =====================================================================
