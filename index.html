@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Music&display=swap">
 <style>
-/* Layout: white brand bar, then instrument picker and view tabs; a sticky progress rail on the left (summary, routine, metronome), the Skills / Practice log / Tuner view on the right; stacks to one column on phones.
+/* Layout: white brand bar, then instrument picker and view tabs; a metronome fixed at the top right; a sticky progress rail on the left (summary, routine), the Skills / Practice log / Tuner view on the right; stacks to one column on phones.
    Look: DoG Street Music branding. Light gray page, white cards, dark brown headings, near-black buttons, mustard gold from the logo as the accent, rust for "in progress". Deliberately single (light) theme to match the brand site. */
 :root {
   color-scheme: light;
@@ -39,7 +39,7 @@ body {
 h1, h2, h3 { color: var(--head); }
 .brandbar { background: var(--surface); border-bottom: 1px solid var(--line); }
 .brandbar-in {
-  max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: flex-start; gap: 16px; flex-wrap: wrap;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px;
 }
 .logo { display: block; height: 64px; width: auto; }
@@ -47,7 +47,7 @@ h1, h2, h3 { color: var(--head); }
 .wordmark b { font-weight: 800; font-size: 28px; color: var(--brass-fill); letter-spacing: .02em; }
 .wordmark b span { color: var(--work); }
 .wordmark small { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; color: var(--ink); margin-top: 3px; }
-.brand-tag { font-size: 15px; font-weight: 500; color: var(--ink); }
+.brand-tag { font-size: 15px; font-weight: 500; color: var(--muted); padding-left: 14px; border-left: 1px solid var(--line); }
 .wrap {
   max-width: 1180px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -117,7 +117,24 @@ h1 {
 .routine li { display: grid; grid-template-columns: 46px 1fr; gap: 8px; }
 .routine b { font-family: var(--font-mono); font-weight: 500; color: var(--brass); font-size: 12.5px; padding-top: 1px; }
 
-.metro { display: grid; gap: 10px; }
+.metro-fab {
+  position: fixed; z-index: 20; display: grid; justify-items: end; gap: 8px;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px));
+}
+.metro-bar {
+  display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 6px 6px 6px 12px; box-shadow: 0 4px 16px rgba(45, 32, 20, .14);
+}
+.metro-tempo { background: none; border: 0; color: var(--head); font-weight: 600; font-size: 14px; padding: 4px 6px; border-radius: 6px; white-space: nowrap; }
+.metro-tempo:hover { background: var(--bg); }
+.metro-tempo:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.metro-tempo .q { font-family: var(--font-music); font-size: 16px; font-weight: 400; }
+.metro-tempo b { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; display: inline-block; min-width: 3ch; text-align: center; }
+.metro-tempo .caret { font-size: 11px; color: var(--muted); }
+.metro-panel { width: min(300px, calc(100vw - 32px)); box-shadow: 0 8px 24px rgba(45, 32, 20, .16); }
+.metro-fab .beats span { width: 10px; height: 10px; }
+@media (max-width: 640px) { .brand-tag { display: none; } .metro-fab .beats { display: none; } }
 .metro-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
 .bpm { font-family: var(--font-display); font-weight: 800; font-size: 30px; min-width: 3ch; font-variant-numeric: tabular-nums; }
 .bpm-label { font-size: 12px; color: var(--muted); }
@@ -341,6 +358,26 @@ textarea { resize: vertical; min-height: 64px; }
   </div>
 </div>
 
+<div class="metro-fab" id="metro-fab">
+  <div class="metro-bar">
+    <div class="beats" id="beats" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <button type="button" class="metro-tempo" id="metro-open" aria-expanded="false" aria-controls="metro-panel" aria-label="Metronome settings"><span class="q">♩ =</span> <b id="bpm-out">60</b> <span class="caret">▾</span></button>
+    <button class="btn primary" id="metro-btn" type="button">Start</button>
+  </div>
+  <div class="panel metro-panel" id="metro-panel" hidden>
+    <h2>Metronome</h2>
+    <label class="bpm-label" for="bpm">Tempo (beats per minute)</label>
+    <input type="range" id="bpm" min="40" max="160" step="2" value="60">
+    <div class="reset-row">
+      <button class="btn small" type="button" data-bpm="60">60</button>
+      <button class="btn small" type="button" data-bpm="80">80</button>
+      <button class="btn small" type="button" data-bpm="100">100</button>
+      <button class="btn small" type="button" data-bpm="120">120</button>
+    </div>
+    <div class="vol-row"><label for="vol">Volume</label><input type="range" id="vol" min="0" max="100" step="5" value="90"><span id="vol-out">90</span></div>
+  </div>
+</div>
+
 <div class="wrap">
   <header class="top">
     <div class="eyebrow">Beginning band · Essential Elements Book 1</div>
@@ -377,22 +414,6 @@ textarea { resize: vertical; min-height: 64px; }
         <ul class="routine" id="routine"></ul>
       </section>
 
-      <section class="panel metro" aria-labelledby="mt-h">
-        <h2 id="mt-h">Metronome</h2>
-        <div class="metro-row">
-          <div><div class="bpm" id="bpm-out">60</div><div class="bpm-label">beats per minute</div></div>
-          <div class="beats" id="beats" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-        </div>
-        <label class="bpm-label" for="bpm">Tempo</label>
-        <input type="range" id="bpm" min="40" max="160" step="2" value="60">
-        <div class="vol-row"><label for="vol">Volume</label><input type="range" id="vol" min="0" max="100" step="5" value="90"><span id="vol-out">90</span></div>
-        <div class="reset-row">
-          <button class="btn primary" id="metro-btn" type="button">Start</button>
-          <button class="btn" type="button" data-bpm="60">60</button>
-          <button class="btn" type="button" data-bpm="80">80</button>
-          <button class="btn" type="button" data-bpm="100">100</button>
-        </div>
-      </section>
     </aside>
 
     <main>
@@ -1010,7 +1031,7 @@ function staffSVG(name, midi, clef) {
   for (let k = -2; k >= idx; k -= 2) out += `<line class="sl" x1="${x - 7}" x2="${x + 7}" y1="${42 - k * 3}" y2="${42 - k * 3}"/>`;
   for (let k = 10; k <= idx; k += 2) out += `<line class="sl" x1="${x - 7}" x2="${x + 7}" y1="${42 - k * 3}" y2="${42 - k * 3}"/>`;
   out += clef === "bass"
-    ? `<text class="glyph" x="1" y="36" font-size="25">𝄢</text>`
+    ? `<text class="glyph" x="1" y="43" font-size="30">𝄢</text>`
     : `<text class="glyph" x="1" y="45" font-size="33">𝄞</text>`;
   if (acc) out += `<text class="glyph" x="${x - 17}" y="${y + (acc === "♭" ? 4 : 5)}" font-size="20">${acc}</text>`;
   out += `<ellipse class="nh" cx="${x}" cy="${y}" rx="5" ry="3.4" transform="rotate(-18 ${x} ${y})"/>`;
@@ -1406,6 +1427,11 @@ function schedule() {
     beat = (beat + 1) % 4;
   }
 }
+const metroOpen = document.getElementById("metro-open"), metroPanel = document.getElementById("metro-panel");
+function setMetroPanel(open) { metroPanel.hidden = !open; metroOpen.setAttribute("aria-expanded", String(open)); }
+metroOpen.addEventListener("click", () => setMetroPanel(metroPanel.hidden));
+document.addEventListener("click", e => { if (!metroPanel.hidden && !e.target.closest("#metro-fab")) setMetroPanel(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !metroPanel.hidden) { setMetroPanel(false); metroOpen.focus(); } });
 metroBtn.addEventListener("click", async () => {
   if (timer) {
     clearInterval(timer); timer = null; metroBtn.textContent = "Start";
